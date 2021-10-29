@@ -20,24 +20,33 @@ Log * Log::inst()
 
 void Log::message(std::string msg)
 {
-    inst()->m_messages.push_back(msg);
+    inst()->m_messages.push_back("|MSG:| " + msg + "|:MSG|");
 }
 
 void Log::warning(std::string wrn)
 {
-    inst()->m_messages.push_back(wrn);
+    inst()->m_messages.push_back("|WRN:| " + wrn + "|:WRN|");
 }
 
 void Log::error(std::string err)
 {
-    inst()->m_messages.push_back(err);
+    inst()->m_messages.push_back("|ERR:| " + err + "|:ERR|");
 }
 
 
 
 void Log::printLog(int numberOfMsgs)
 {
-    // TODO: print to the console
+    long msgsCount = m_messages.size();
+    for (
+         int i = 0;
+         (i < numberOfMsgs || numberOfMsgs == -1) && i < msgsCount;
+         ++i
+         )
+    {
+        std::cout << m_messages.front() << std::endl;
+        m_messages.pop_front();
+    }
 }
 
 void Log::saveLog(int numberOfMsgs)

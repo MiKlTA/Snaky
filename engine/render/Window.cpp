@@ -4,9 +4,9 @@
 
 
 
-Window::Window(IGameCycle *gameCycle, Render *render)
+Window::Window(IGameCycle *gameCycle)
     : m_gameCycle(gameCycle),
-      m_render(render)
+      m_render(nullptr)
 {
     glfwSetErrorCallback(errorCalback);
     glfwInit();
@@ -24,13 +24,39 @@ Window::Window(IGameCycle *gameCycle, Render *render)
 
 void Window::startWindowCycle()
 {
+    if (m_render == nullptr)
+    {
+        Log::inst()->warning("Render is not set!");
+        return;
+    }
     while(!glfwWindowShouldClose(m_window))
     {
         glfwPollEvents();
+        
+        
+        
         m_gameCycle->update();
         m_render->renderAll();
+        
         glfwSwapBuffers(m_window);
     }
+}
+
+
+
+void Window::bindRender(Render *render)
+{
+    m_render = render;
+}
+
+void Window::bindMouse(Mouse *mouse)
+{
+    
+}
+
+void Window::bindKeyboard(Keyboard *keyboard)
+{
+    
 }
 
 

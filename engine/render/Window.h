@@ -11,9 +11,12 @@
 
 #include "engine/gl.h"
 
+#include "../Log.h"
+
 #include "IGameCycle.h"
-#include "Render.h"
 #include "../handle/Mouse.h"
+#include "../handle/Keyboard.h"
+#include "Render.h"
 
 
 
@@ -21,11 +24,13 @@ class Window
 {
 
 public:
-    Window(IGameCycle *gameCycle, Render *render);
+    Window(IGameCycle *gameCycle);
     
 	void startWindowCycle();
     
+    void bindRender(Render *render);
     void bindMouse(Mouse *mouse);
+    void bindKeyboard(Keyboard *keyboard);
 	
 private:
     GLFWwindow *m_window;

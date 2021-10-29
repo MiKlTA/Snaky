@@ -5,6 +5,7 @@
 
 #include "Render.h"
 
+#include "GLM/matrix.hpp"
 
 
 
@@ -13,13 +14,13 @@ class RenderingObject
 {
 
 public:
-    RenderingObject(Render *render) {m_render = render;};
+    RenderingObject(Render *render);
+    virtual ~RenderingObject();
     
-    virtual void draw() = 0;
+    virtual void draw(const glm::mat4 &view, const glm::mat4 &proj) = 0;
     
 private:
     Render *m_render;
-    
 };
 
 

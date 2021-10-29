@@ -4,9 +4,11 @@
 
 
 #include <set>
+#include <string>
 
-#include "Shader.h"
 #include "engine/gl.h"
+
+#include "../Log.h"
 
 
 
@@ -29,7 +31,15 @@ public:
     void addRenderingObject(RenderingObject *rObj);
     void removeRenderingObject(RenderingObject *rObj);
     
-    
+    static void GLAPIENTRY messageCallback(
+            GLenum source,
+            GLenum type,
+            GLuint id,
+            GLenum severity,
+            GLsizei length,
+            const GLchar* message,
+            const void* userParam
+            );
     
 private:
     std::set<RenderingObject *> m_renderingObjects;

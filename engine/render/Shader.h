@@ -8,6 +8,8 @@
 
 #include "engine/gl.h"
 
+#include "../Log.h"
+
 
 
 class Shader
@@ -15,16 +17,15 @@ class Shader
 
 public:
     Shader(GLuint shaderType, std::string fileName);
-    Shader(GLuint shaderType, const char *shaderCode);
+    Shader(GLuint shaderType, const char *shaderCode, unsigned int size);
     ~Shader();
     
     GLuint getShader() const {return m_shader;};
     
 private:
     GLuint m_shader;
-    char *m_shaderCode;
     
-    void init(GLuint shaderType, const char *shaderCode);
+    void init(GLuint shaderType, const char *shaderCode, int size);
 };
 
 

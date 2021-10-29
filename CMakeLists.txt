@@ -15,6 +15,8 @@ add_executable(SSnaky
     src/CommandManager.h
     src/Field.cpp
     src/Field.h
+    src/Tile.cpp
+    src/Tile.h
     src/FoodCreator.cpp
     src/FoodCreator.h
     src/GameCycle.cpp
@@ -45,6 +47,8 @@ add_executable(SSnaky
     engine/render/IGameCycle.h
     engine/render/Render.cpp
     engine/render/Render.h
+    engine/render/Camera.cpp
+    engine/render/Camera.h
     engine/render/Shader.cpp
     engine/render/Shader.h
     engine/render/ShaderProgram.cpp
@@ -53,10 +57,15 @@ add_executable(SSnaky
     engine/render/RenderingObject.h
     engine/render/Window.cpp
     
-    engine/handle/MouseListener.h
     engine/handle/Mouse.cpp
     engine/handle/Mouse.h
+    engine/handle/MouseListener.h
     engine/handle/MouseListener.cpp
+    engine/handle/Keyboard.cpp
+    engine/handle/Keyboard.h
+    engine/handle/KeyboardListener.h
+    engine/handle/KeyboardListener.cpp
+    
     )
 
 include_directories(D:/mingw32_810/LIBS/glew/include)
