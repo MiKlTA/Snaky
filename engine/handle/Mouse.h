@@ -32,6 +32,8 @@ public:
     const glm::dvec2 & getPos() const {return m_Pos;};
     
 private:
+    Mouse() {};
+    
     static Mouse * m_instance;
     glm::dvec2 m_Pos;
     std::set<MouseListener *> m_listeners;

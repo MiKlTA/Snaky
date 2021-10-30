@@ -1,12 +1,57 @@
 #include "engine/render/Window.h"
 
 #include "engine/Log.h"
+#include "Render.h"
 
 
 
-Window::Window(IGameCycle *gameCycle)
-    : m_gameCycle(gameCycle),
-      m_render(nullptr)
+Window *Window::m_instance = nullptr;
+
+
+
+Window * Window::inst()
+{
+    if (m_instance == nullptr)
+    {
+        m_instance = new Window;
+    }
+    return m_instance;
+}
+
+
+
+void Window::addWindowActiveListener(WindowActiveListener *wal)
+{
+    m_listeners.insert(wal);
+}
+
+void Window::revWindowActiveListener(WindowActiveListener *wal)
+{
+    m_listeners.erase(wal);
+}
+
+
+
+void Window::startWindowCycle()
+{
+    while(!glfwWindowShouldClose(m_window))
+    {
+        glfwPollEvents();
+        
+        GameCycle::inst()->update(glfwGetTime());
+        Render::inst()->renderAll();
+        
+        glfwSwapBuffers(m_window);
+    }
+}
+
+
+
+// private
+
+
+
+Window::Window()
 {
     glfwSetErrorCallback(errorCalback);
     glfwInit();
@@ -18,54 +63,25 @@ Window::Window(IGameCycle *gameCycle)
     m_window = glfwCreateWindow(640, 480, "Snaky", nullptr, nullptr);
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1);
-}
-
-
-
-void Window::startWindowCycle()
-{
-    if (m_render == nullptr)
-    {
-        Log::inst()->warning("Render is not set!");
-        return;
-    }
-    while(!glfwWindowShouldClose(m_window))
-    {
-        glfwPollEvents();
-        
-        
-        
-        m_gameCycle->update();
-        m_render->renderAll();
-        
-        glfwSwapBuffers(m_window);
-    }
-}
-
-
-
-void Window::bindRender(Render *render)
-{
-    m_render = render;
-}
-
-void Window::bindMouse(Mouse *mouse)
-{
     
+    glfwSetWindowSizeCallback(m_window, windowSizeCallback);
+    glfwSetMouseButtonCallback(m_window, Mouse::onMouseButtonPress);
+    glfwSetCursorPosCallback(m_window, Mouse::onCursorMove);
+    glfwSetKeyCallback(m_window, Keyboard::onKey);
 }
-
-void Window::bindKeyboard(Keyboard *keyboard)
-{
-    
-}
-
-
-
-// private
 
 
 
 void Window::errorCalback(int error, const char *errorText)
 {
     Log::inst()->error(std::to_string(error) + " | " + std::string(errorText));
+}
+
+void Window::windowSizeCallback(GLFWwindow *window, int w, int h)
+{
+    glViewport(0, 0, w, h);
+    for (auto wal : inst()->m_listeners)
+    {
+        wal->onWindowResize(w, h);
+    }
 }

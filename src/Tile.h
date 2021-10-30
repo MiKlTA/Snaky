@@ -28,10 +28,7 @@ public:
         FOOD
     };
     
-    Tile(
-            Render *render, TileType tt,
-            const glm::vec3 rot
-         );
+    Tile(Render *render, TileType tt, bool isInverted);
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
     
@@ -43,18 +40,16 @@ public:
     void addSnaky(Snaky *snaky) {m_snaky.insert(snaky);};
     void remSnaky(Snaky *snaky) {m_snaky.erase(snaky);};
     
-    void setPos(); // TODO
+    void setPos(float x, float y);
     
 private:
     TileType m_tileType;
     std::set<Snaky *> m_snaky;
     
     glm::vec3 m_pos;
-    const glm::vec3 m_rot;
+    const float m_rot;
     const glm::vec3 m_scale;
     glm::mat4 m_model;
-    
-    
     
     static bool m_modelIsDone;
     static GLfloat *m_modelsVertices;
@@ -66,6 +61,7 @@ private:
     
     
     static void makeModel();
+    void updModelMat();
 };
 
 

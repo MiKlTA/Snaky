@@ -6,6 +6,10 @@
 #include <set>
 #include <string>
 
+#include "GLM/vec2.hpp"
+
+#include "Camera.h"
+
 #include "engine/gl.h"
 
 #include "../Log.h"
@@ -25,11 +29,24 @@ class Render
 {
 
 public:
-    Render();
+    static Render * inst();
     
     void renderAll();
     void addRenderingObject(RenderingObject *rObj);
     void removeRenderingObject(RenderingObject *rObj);
+    void bindCamera(Camera *camera);
+    
+    glm::vec2 getGLPixelSize() const; 
+    glm::ivec2 getWinSize() const {return m_winSize;};
+    
+private:
+    Render();
+    static Render *m_instance;
+    
+    std::set<RenderingObject *> m_renderingObjects;
+    Camera *m_curCamera;
+    
+    glm::ivec2 m_winSize;
     
     static void GLAPIENTRY messageCallback(
             GLenum source,
@@ -40,9 +57,6 @@ public:
             const GLchar* message,
             const void* userParam
             );
-    
-private:
-    std::set<RenderingObject *> m_renderingObjects;
 };
 
 

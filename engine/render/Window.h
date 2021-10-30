@@ -8,15 +8,17 @@
 
 
 #include <iostream>
+#include <set>
+
+#include "WindowActiveListener.h"
 
 #include "engine/gl.h"
 
 #include "../Log.h"
 
-#include "IGameCycle.h"
+#include "../handle/GameCycle.h"
 #include "../handle/Mouse.h"
 #include "../handle/Keyboard.h"
-#include "Render.h"
 
 
 
@@ -24,21 +26,24 @@ class Window
 {
 
 public:
-    Window(IGameCycle *gameCycle);
+    static Window * inst();
+    
+    void addWindowActiveListener(WindowActiveListener *wal);
+    void revWindowActiveListener(WindowActiveListener *wal);
     
 	void startWindowCycle();
-    
-    void bindRender(Render *render);
-    void bindMouse(Mouse *mouse);
-    void bindKeyboard(Keyboard *keyboard);
 	
 private:
+    Window();
+    static Window *m_instance;
+    
+    std::set<WindowActiveListener *> m_listeners;
+    
     GLFWwindow *m_window;
     
-    IGameCycle *m_gameCycle;
-    Render *m_render;
-    
     static void errorCalback(int error, const char *errorText);
+    static void windowSizeCallback(GLFWwindow *window, int w, int h);
+    
 };
 
 

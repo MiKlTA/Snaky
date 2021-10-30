@@ -3,12 +3,12 @@
 
 
 RenderingObject::RenderingObject(Render *render)
-    : m_render(render)
+    : m_parent(render)
 {
-    m_render->addRenderingObject(this);
+    m_parent->addRenderingObject(this);
 }
 
 RenderingObject::~RenderingObject()
 {
-    m_render->removeRenderingObject(this);
+    m_parent->removeRenderingObject(this);
 }

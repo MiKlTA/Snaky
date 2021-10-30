@@ -29,6 +29,7 @@ public:
     void saveLog(int numberOfMsgs);
     
 private:
+    Log() {};
     static Log *m_instance;
     static std::list<std::string> m_messages;
 };

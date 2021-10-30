@@ -19,8 +19,6 @@ add_executable(SSnaky
     src/Tile.h
     src/FoodCreator.cpp
     src/FoodCreator.h
-    src/GameCycle.cpp
-    src/GameCycle.h
     src/Initializer.cpp
     src/Initializer.h
     src/MouseHandler.cpp
@@ -43,8 +41,9 @@ add_executable(SSnaky
     engine/Server.h
     
     engine/render/Window.h
-    engine/render/IGameCycle.cpp
-    engine/render/IGameCycle.h
+    engine/render/Window.cpp
+    engine/render/WindowActiveListener.h
+    engine/render/WindowActiveListener.cpp
     engine/render/Render.cpp
     engine/render/Render.h
     engine/render/Camera.cpp
@@ -55,8 +54,11 @@ add_executable(SSnaky
     engine/render/ShaderProgram.h
     engine/render/RenderingObject.cpp
     engine/render/RenderingObject.h
-    engine/render/Window.cpp
     
+    engine/handle/GameCycle.cpp
+    engine/handle/GameCycle.h
+    engine/handle/Timer.cpp
+    engine/handle/Timer.h
     engine/handle/Mouse.cpp
     engine/handle/Mouse.h
     engine/handle/MouseListener.h

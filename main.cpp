@@ -2,7 +2,7 @@
 
 #include "engine/gl.h"
 #include "src/Tile.h"
-#include "src/GameCycle.h"
+#include "engine/handle/GameCycle.h"
 #include "engine/render/Window.h"
 #include "engine/Log.h"
 
@@ -12,16 +12,15 @@ int main()
 {
     std::cout << "HELLOOOOOOOOOO WORLD!!!!" << std::endl;
     
+    Camera *camera = new Camera;
+    Render::inst()->bindCamera(camera);
     
-    GameCycle *gc = new GameCycle();
-    Window window(gc);
-    Render *render = new Render();
-    window.bindRender(render);
-    
-    Tile tile(render, Tile::TileType::SOLID, glm::vec3(0.0f));
+    Tile tile(Render::inst(), Tile::TileType::SOLID, true);
+    Tile tile2(Render::inst(), Tile::TileType::SOLID, false);
+    tile2.setPos(0.5f, 0.0f);
     Log::inst()->printLog(-1);
     
-    window.startWindowCycle();
+    Window::inst()->startWindowCycle();
     
     std::cout << "borks!" << std::endl;
     return 0;

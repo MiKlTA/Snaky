@@ -21,6 +21,9 @@ public:
     static char readChar();
     static int readNumber();
     static std::string readString();
+    
+private:
+    Console() {};
 };
 
 

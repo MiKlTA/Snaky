@@ -31,6 +31,8 @@ public:
     const glm::dvec2 & getPos() const {return m_Pos;};
     
 private:
+    Keyboard() {};
+    
     static Keyboard * m_instance;
     glm::dvec2 m_Pos;
     std::set<KeyboardListener *> m_listeners;
