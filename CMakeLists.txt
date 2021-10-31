@@ -17,6 +17,8 @@ add_executable(SSnaky
     src/Field.h
     src/Tile.cpp
     src/Tile.h
+    src/Rectangle.cpp
+    src/Rectangle.h
     src/FoodCreator.cpp
     src/FoodCreator.h
     src/Initializer.cpp
@@ -67,6 +69,8 @@ add_executable(SSnaky
     engine/handle/Keyboard.h
     engine/handle/KeyboardListener.h
     engine/handle/KeyboardListener.cpp
+    
+    engine/etc/Direction.h
     
     )
 

@@ -8,11 +8,13 @@ Camera::Camera()
     : Timer(updDelay()),
       m_pos(0.0f, 0.0f, -1.0f),
       m_rot(0.0f),
-      m_size(1.0f),
+      // TODO: change to 1.0f
+      m_size(5.0f),
       // TODO: change to 0.5f
       m_proj(glm::ortho(-2.5f, 2.5f, -2.5f, 2.5f)),
       m_horizontal(Moving::NONE),
-      m_vertical(Moving::NONE)
+      m_vertical(Moving::NONE),
+      m_zoom(Moving::NONE)
 {
     
 }
@@ -37,18 +39,10 @@ void Camera::onKeyDown(int key)
         break;
     // TODO: remove it
     case GLFW_KEY_Q:
-        m_size.x *= 1.1f;
-        m_proj = glm::ortho(
-                    -m_size.x/2.0f, m_size.x/2.0f,
-                    -m_size.x/2.0f, m_size.x/2.0f
-                    );
+        m_zoom = Moving::FORWARD;
         break;
     case GLFW_KEY_E:
-        m_size.x /= 1.1f;
-        m_proj = glm::ortho(
-                    -m_size.x/2.0f, m_size.x/2.0f,
-                    -m_size.x/2.0f, m_size.x/2.0f
-                    );
+        m_zoom = Moving::BACK;
         break;
     }
 }
@@ -58,12 +52,29 @@ void Camera::onKeyUp(int key)
     switch (key)
     {
     case GLFW_KEY_W:
+        if (m_vertical == Moving::FORWARD)
+            m_vertical = Moving::NONE;
+        break;
     case GLFW_KEY_S:
-        m_vertical = Moving::NONE;
+        if (m_vertical == Moving::BACK)
+            m_vertical = Moving::NONE;
         break;
     case GLFW_KEY_D:
+        if (m_horizontal == Moving::FORWARD)
+            m_horizontal = Moving::NONE;
+        break;
     case GLFW_KEY_A:
-        m_horizontal = Moving::NONE;
+        if (m_horizontal == Moving::BACK)
+            m_horizontal = Moving::NONE;
+        break;
+        // DLT:
+    case GLFW_KEY_Q:
+        if (m_zoom == Moving::FORWARD)
+            m_zoom = Moving::NONE;
+        break;
+    case GLFW_KEY_E:
+        if (m_zoom == Moving::BACK)
+            m_zoom = Moving::NONE;
         break;
     }
 }
@@ -88,6 +99,24 @@ void Camera::onTick()
     else if (m_vertical == Moving::BACK)
     {
         m_pos.y -= deltaPos();
+    }
+    
+    // DLT:
+    if (m_zoom == Moving::FORWARD)
+    {
+        m_size.x *= 1.03f;
+        m_proj = glm::ortho(
+                    -m_size.x/2.0f, m_size.x/2.0f,
+                    -m_size.x/2.0f, m_size.x/2.0f
+                    );
+    }
+    else if (m_zoom == Moving::BACK)
+    {
+        m_size.x /= 1.03f;
+        m_proj = glm::ortho(
+                    -m_size.x/2.0f, m_size.x/2.0f,
+                    -m_size.x/2.0f, m_size.x/2.0f
+                    );
     }
 }
 

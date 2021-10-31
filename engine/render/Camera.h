@@ -15,8 +15,9 @@
 
 
 
-class Camera
-        : public KeyboardListener, public Timer, public WindowActiveListener
+class Camera :
+        public KeyboardListener, public Timer,
+        public WindowActiveListener
 {
 
 public:
@@ -51,6 +52,8 @@ private:
     
     Moving m_horizontal;
     Moving m_vertical;
+    // DLT:
+    Moving m_zoom;
     
     static float deltaPos() {return 0.1f;};
     static double updDelay() {return 0.01;};

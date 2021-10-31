@@ -60,7 +60,7 @@ Window::Window()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
-    m_window = glfwCreateWindow(640, 480, "Snaky", nullptr, nullptr);
+    m_window = glfwCreateWindow(640, 640, "Snaky", nullptr, nullptr);
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1);
     

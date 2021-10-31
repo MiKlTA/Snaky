@@ -37,12 +37,18 @@ void Render::renderAll()
 
 void Render::addRenderingObject(RenderingObject *rObj)
 {
-    m_renderingObjects.insert(rObj);
+    m_renderingObjects.push_back(rObj);
 }
 
 void Render::removeRenderingObject(RenderingObject *rObj)
 {
-    m_renderingObjects.erase(rObj);
+    auto found = std::find(
+                m_renderingObjects.begin(), m_renderingObjects.end(), rObj
+                           );
+    if (found != m_renderingObjects.end())
+    {
+        m_renderingObjects.erase(found);
+    }
 }
 
 

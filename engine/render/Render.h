@@ -3,7 +3,8 @@
 
 
 
-#include <set>
+#include <vector>
+#include <algorithm>
 #include <string>
 
 #include "GLM/vec2.hpp"
@@ -43,7 +44,7 @@ private:
     Render();
     static Render *m_instance;
     
-    std::set<RenderingObject *> m_renderingObjects;
+    std::vector<RenderingObject *> m_renderingObjects;
     Camera *m_curCamera;
     
     glm::ivec2 m_winSize;
