@@ -52,10 +52,10 @@ private:
     int m_tilesPassed;
     glm::ivec2 m_startPoint;
     
-    float m_movingStage;
+    float m_rot;
     
     void drawPiece(Tile *location);
-    void drawMovingPiece(Tile *location, float stage);
+    void drawMovingPiece(Tile *location);
     
     glm::mat4 m_model;
     glm::vec4 m_color;
@@ -73,6 +73,8 @@ private:
     
     static float topPointY() {return std::sqrt(3.0f)/4.0f;};
     static int stageOfMoving() {return 20;};
+    static float maxAngle() {return glm::pi<float>()/2.0f;};
+    static float deltaAngle() {return maxAngle()/(stageOfMoving() * 1.0f);};
 };
 
 

@@ -34,7 +34,7 @@ Snaky::Snaky(
       m_direction(0.0f),
       m_tilesPassed(0),
       m_startPoint(head->getFieldPos()),
-      m_movingStage(0.0f),
+      m_rot(maxAngle()),
       m_model(1.0f),
       m_color(color)
 {
@@ -66,7 +66,7 @@ void Snaky::draw(const glm::mat4 &view, const glm::mat4 &proj)
     glUniformMatrix4fv(m_projMatLoc, 1, GL_FALSE, &proj[0][0]);
     glUniform4fv(m_colorLoc, 1, &m_color[0]);
     
-    drawPiece(m_head);
+    drawMovingPiece(m_head);
     for (auto t : m_tail)
     {
         drawPiece(t);
@@ -77,8 +77,7 @@ void Snaky::draw(const glm::mat4 &view, const glm::mat4 &proj)
 
 void Snaky::onTick()
 {
-    // TODO: calc moving
-    
+    m_rot -= deltaAngle();
 }
 
 
@@ -118,7 +117,7 @@ void Snaky::finishMoving()
     if (!m_isMoving) return;
     
     m_isMoving = false;
-    m_movingStage = 0.0f;
+    m_rot = maxAngle();
     m_tilesPassed = 0;
     m_startPoint = glm::ivec2(0, 0);
 }
@@ -151,9 +150,58 @@ void Snaky::drawPiece(Tile *location)
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-void Snaky::drawMovingPiece(Tile *location, float stage)
+void Snaky::drawMovingPiece(Tile *location)
 {
-    // TODO:
+    m_model = glm::translate(glm::mat4(1.0f), glm::vec3(location->getPos()));
+    m_model = glm::rotate(
+                m_model,
+                location->isInverted() ? glm::pi<float>() : 0.0f,
+                glm::vec3(0.0f, 0.0f, 1.0f)
+                          );
+    
+    // TODO: FINISH IT!!!!
+    
+    Tile *prevTile = m_tail.front();
+    glm::vec2 axis;
+    if (!location->isInverted())
+    {
+        if (m_field->getTileByDir(prevTile, Direction::LEFT))
+        {
+            axis = location->getPointUp(0.0) - location->getPointLeft(0.0);
+        }
+        else if (m_field->getTileByDir(prevTile, Direction::RIGHT))
+        {
+            axis = location->getPointUp(0.0) - location->getPointRight(0.0);
+        }
+        else if (m_field->getTileByDir(prevTile, Direction::DOWN))
+        {
+            axis = location->getPointLeft(0.0) - location->getPointRight(0.0);
+        }
+    }
+    else
+    {
+        if (m_field->getTileByDir(prevTile, Direction::LEFT))
+        {
+            axis = location->getPointUp(0.0) - location->getPointLeft(0.0);
+        }
+        else if (m_field->getTileByDir(prevTile, Direction::RIGHT))
+        {
+            axis = location->getPointUp(0.0) - location->getPointRight(0.0);
+        }
+        else if (m_field->getTileByDir(prevTile, Direction::UP))
+        {
+            axis = location->getPointLeft(0.0) - location->getPointRight(0.0);
+        }
+    }
+        
+    m_model = glm::rotate(
+                m_model,
+                m_rot,
+                glm::vec3(axis.x, axis.y, 0.0f)
+                          );
+    
+    glUniformMatrix4fv(m_modelMatLoc, 1, GL_FALSE, &m_model[0][0]);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 

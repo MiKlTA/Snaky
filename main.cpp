@@ -22,20 +22,23 @@ int main()
     Render::inst()->bindCamera(camera);
     
     Field field(Render::inst(), glm::ivec2(20, 10));
-    Tile **tail = new Tile*[6]
+    Tile **tail = new Tile*[9]
     {
         field.getTile(4, 1),
         field.getTile(4, 2),
         field.getTile(3, 2),
         field.getTile(2, 2),
         field.getTile(1, 2),
-        field.getTile(1, 3)
+        field.getTile(1, 3),
+        field.getTile(1, 2),
+        field.getTile(1, 2),
+        field.getTile(1, 1)
     };
     Snaky snaky(
                 Render::inst(),
                 &field,
                 field.getTile(5, 1),
-                tail, 6,
+                tail, 9,
                 glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
                 );
     SnakyController sController(&snaky);

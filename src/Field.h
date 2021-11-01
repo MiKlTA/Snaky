@@ -27,7 +27,6 @@ public:
     Tile ** getTilesNear(const Tile *tile, int &count);
     Tile * getTileByDir(const Tile *tile, Direction dir);
     Tile * getTileOnLine(glm::ivec2 startPoint, float tanAngle, int n);
-    Tile * getTileOn();
     
     void moveSnaky(); // TODO:
     
