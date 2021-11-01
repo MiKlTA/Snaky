@@ -5,16 +5,16 @@
 Field::Field(Render *render, glm::ivec2 size)
     : RenderingObject(render),
       m_size(size),
-      m_tiles(new Tile**[m_size.x])
+      m_tiles(new Tile**[size.x])
 {
     for (int x = 0; x < m_size.x; ++x)
     {
         m_tiles[x] = new Tile*[m_size.y];
-        for (int y = 0; y < m_size.x; ++y)
+        for (int y = 0; y < m_size.y; ++y)
         {
             m_tiles[x][y] = new Tile(
                         render, Tile::TileType::VOID,
-                        getTilePos(x, y), (x + y) % 2 != 0
+                        glm::ivec2(x, y), (x + y) % 2 != 0
                                      );
         }
     }
@@ -24,7 +24,7 @@ Field::~Field()
 {
     for (int x = 0; x < m_size.x; ++x)
     {
-        for (int y = 0; y < m_size.x; ++y)
+        for (int y = 0; y < m_size.y; ++y)
         {
             delete m_tiles[x][y];
         }
@@ -38,7 +38,7 @@ Field::~Field()
 void Field::draw(const glm::mat4 &view, const glm::mat4 &proj)
 {
     for (int x = 0; x < m_size.x; ++x)
-        for (int y = 0; y < m_size.x; ++y)
+        for (int y = 0; y < m_size.y; ++y)
         {
             m_tiles[x][y]->draw(view, proj);
         }

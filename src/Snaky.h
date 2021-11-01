@@ -54,12 +54,14 @@ private:
     glm::mat4 m_model;
     glm::vec4 m_color;
     
-    static bool m_modelIsDone;
-    static GLfloat *m_modelsVertices;
-    static unsigned int m_modelsVerticesCount;
-    static GLuint m_VBO, m_VAO;
-    static ShaderProgram *m_shaderProgram;
-    static GLuint m_modelMatLoc, m_viewMatLoc, m_projMatLoc, m_colorLoc;
+//    static bool m_modelIsDone;
+//    static GLfloat *m_modelsVertices;
+//    static unsigned int m_modelsVerticesCount;
+//    static GLuint m_VBO, m_VAO;
+//    static ShaderProgram *m_shaderProgram;
+//    static GLuint m_modelMatLoc, m_viewMatLoc, m_projMatLoc;
+//    static GLuint m_colorLoc;
+//    static GLuint m_centrePosLoc;
     
     static void makeModel();
     
