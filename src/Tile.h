@@ -27,7 +27,10 @@ public:
         FOOD
     };
     
-    Tile(Render *render, TileType tt, glm::ivec2 pos, bool isInverted);
+    Tile(
+            Render *render, TileType tt, glm::ivec2 pos,
+            bool isPeaceful, bool isInverted
+         );
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
     
@@ -35,6 +38,7 @@ public:
     
     void addFood() {m_tileType = TileType::FOOD;};
     void eatFood() {m_tileType = TileType::SOLID;};
+    bool haveFood() {return m_tileType == TileType::FOOD;};
     const std::set<Snaky *> & getSnaky() {return m_snaky;};
     void addSnaky(Snaky *snaky) {m_snaky.insert(snaky);};
     void remSnaky(Snaky *snaky) {m_snaky.erase(snaky);};
@@ -47,10 +51,12 @@ public:
     
     const glm::vec3 & getPos() const {return m_pos;};
     const glm::ivec2 & getFieldPos() const {return m_fieldPos;};
+    bool isPeaceful() const {return m_isPeaceful;};
     bool isInverted() const {return m_isInverted;};
     
 private:
     TileType m_tileType;
+    bool m_isPeaceful;
     std::set<Snaky *> m_snaky;
     glm::ivec2 m_fieldPos;
     bool m_isInverted;
