@@ -2,6 +2,9 @@
 
 #include "Field.h"
 
+// DLT:
+#include <random>
+
 
 
 bool Snaky::m_modelIsDone = false;
@@ -29,12 +32,14 @@ Snaky::Snaky(
       m_field(field),
       m_head(head),
       m_tail(),
+      
       m_isGrowing(false),
-      m_isMoving(false),
-      m_direction(0.0f),
-      m_tilesPassed(0),
-      m_startPoint(head->getFieldPos()),
+      m_isMovingAnimation(false),
+      m_trajectory(),
+      m_targetPoint(0.0f),
+      
       m_rot(maxAngle()),
+      
       m_model(1.0f),
       m_color(color)
 {
@@ -44,12 +49,12 @@ Snaky::Snaky(
     }
     
     makeModel();
-    
-    m_startPoint = m_head->getFieldPos();
 }
 
 Snaky::~Snaky()
 {
+    die();
+    
     delete[] m_modelsVertices;
     delete m_shaderProgram;
     glDeleteBuffers(1, &m_VBO);
@@ -66,7 +71,10 @@ void Snaky::draw(const glm::mat4 &view, const glm::mat4 &proj)
     glUniformMatrix4fv(m_projMatLoc, 1, GL_FALSE, &proj[0][0]);
     glUniform4fv(m_colorLoc, 1, &m_color[0]);
     
-    drawMovingPiece(m_head);
+    if (m_isMovingAnimation)
+        drawMovingPiece(m_head);
+    else
+        drawPiece(m_head);
     for (auto t : m_tail)
     {
         drawPiece(t);
@@ -82,24 +90,28 @@ void Snaky::onTick()
 
 
 
-void Snaky::changeDirection(float dir)
+Tile * Snaky::getNextTile()
 {
-    m_startPoint = m_head->getFieldPos();
-    m_direction = dir;
-    m_tilesPassed = 0;
+    if (m_trajectory.empty()) return nullptr;
+    return m_trajectory.back();
 }
 
-void Snaky::startMoveNow()
+void Snaky::move()
 {
-    if (m_isMoving) return;
-    
-    Tile *next = nextTile();
-    if (next == nullptr) return;
-    m_tilesPassed++;
-    
-    next->addSnaky(this);
+    if (m_trajectory.empty()) return;
+    Tile *back = m_trajectory.back();
+    // DLT:
+    Log::inst()->message(
+                std::to_string(back->getFieldPos().x)
+                + " | "
+                + std::to_string(back->getFieldPos().y)
+                );
+    Log::inst()->printLog(1);
+    m_trajectory.pop_back();
+    back->addSnaky(this);
     m_tail.push_front(m_head);
-    m_head = next;
+    m_head = back;
+    m_rot = maxAngle();
     
     if (m_isGrowing)
     {
@@ -112,23 +124,51 @@ void Snaky::startMoveNow()
     }
 }
 
-void Snaky::finishMoving()
+void Snaky::startMovingAnimation()
 {
-    if (!m_isMoving) return;
+    if (m_isMovingAnimation) return;
+    m_isMovingAnimation = true;
     
-    m_isMoving = false;
     m_rot = maxAngle();
-    m_tilesPassed = 0;
-    m_startPoint = glm::ivec2(0, 0);
+}
+
+void Snaky::finishMovingAnimation()
+{
+    if (!m_isMovingAnimation) return;
+    m_isMovingAnimation = false;
+}
+
+void Snaky::updateTrajectory()
+{
+    if (m_trajectory.empty())
+    {
+        // DLT:
+        m_targetPoint = glm::ivec2(rand() % 49 + 1, rand() % 24 + 1);
+        Log::inst()->message("New target: "
+                    + std::to_string(m_targetPoint.x)
+                    + " | "
+                    + std::to_string(m_targetPoint.y)
+                    );
+        Log::inst()->printLog(1);
+        
+        int x = m_targetPoint.x - m_head->getFieldPos().x;
+        int y = m_targetPoint.y - m_head->getFieldPos().y;
+        float tanAngle = y / (x * 1.0f);
+        bool xIsN = x < 0;
+        bool yIsN = y < 0.0f;
+        makeTrajectory(tanAngle < 0 ? -tanAngle : tanAngle, xIsN, yIsN);
+    }
 }
 
 
 
-Tile * Snaky::nextTile()
+void Snaky::die()
 {
-    return m_field->getTileOnLine(
-                m_startPoint, m_direction, m_tilesPassed + 1
-                );
+    for (auto t : m_tail)
+    {
+        t->remSnaky(this);
+    }
+    m_head->remSnaky(this);
 }
 
 
@@ -136,6 +176,92 @@ Tile * Snaky::nextTile()
 // private:
 
 
+void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
+{
+    int kx = mirroredX ? -1 : 1;
+    int ky = mirroredY ? -1 : 1;
+    
+    int shiftX = m_head->getFieldPos().x;
+    int shiftY = m_head->getFieldPos().y;
+    
+    int x = 0;
+    int y = 0;
+    Tile *next = nullptr;
+    
+    if (tanAngle <= 1.0f)
+    {
+        // TODO: think about how to cram it into one cycle and make it easier
+        for (int i = 1; !(x == m_targetPoint.x && y == m_targetPoint.y); ++i)
+        {
+            x = kx * i + shiftX;
+            y = ky * std::round(tanAngle * i) + shiftY;
+            next = m_field->getTile(x, y);
+            if (next == nullptr) return;
+            
+            Tile *prev;
+            if (!m_trajectory.empty())
+                prev = m_trajectory.front();
+            else
+                prev = m_head;
+            
+            if (!m_field->canMoveDirectlyTo(prev, next))
+            {
+                Tile *bridge;
+                if ((!next->isInverted() && !mirroredY)
+                        || (next->isInverted() && mirroredY))
+                    bridge = m_field->getTile(x, y - 1*ky);
+                else
+                    bridge = m_field->getTile(x - 1*kx, y);
+                if (bridge == nullptr) return;
+                m_trajectory.push_front(bridge);
+            }
+            
+            m_trajectory.push_front(next);
+        }
+    }
+    else
+    {
+        for (int i = 1; !(x == m_targetPoint.x && y == m_targetPoint.y); ++i)
+        {
+            x = kx * std::round(i / tanAngle) + shiftX;
+            y = ky * i + shiftY;
+            next = m_field->getTile(x, y);
+            if (next == nullptr) return;
+            
+            Tile *prev;
+            if (!m_trajectory.empty())
+                prev = m_trajectory.front();
+            else
+                prev = m_head;
+            
+            if (!m_field->canMoveDirectlyTo(prev, next))
+            {
+                Tile *bridge;
+                if  (next->getFieldPos().y - prev->getFieldPos().y == 1*ky
+                     && next->getFieldPos().x == prev->getFieldPos().x
+                     && ((next->isInverted() && !mirroredY)
+                         || (!next->isInverted() && mirroredY)))
+                {
+                    // if you want to teach a snake to bypass =
+                    // single obstacles - add here
+                    bridge = m_field->getTile(x + 1*kx, y - 1*ky);
+                    if (bridge == nullptr) return;
+                    m_trajectory.push_front(bridge);
+                    bridge = m_field->getTile(x + 1*kx, y);
+                }
+                else if ((!next->isInverted() && !mirroredY)
+                         || (next->isInverted() && mirroredY))
+                    bridge = m_field->getTile(x, y - 1*ky);
+                else
+                    bridge = m_field->getTile(x - 1*kx, y);
+                if (bridge == nullptr) return;
+                m_trajectory.push_front(bridge);
+            }
+            
+            m_trajectory.push_front(next);
+        }
+    }
+}
 
 void Snaky::drawPiece(Tile *location)
 {
@@ -152,30 +278,32 @@ void Snaky::drawPiece(Tile *location)
 
 void Snaky::drawMovingPiece(Tile *location)
 {
+    //m_model = glm::mat4(1.0f);
     m_model = glm::translate(glm::mat4(1.0f), glm::vec3(location->getPos()));
-    m_model = glm::rotate(
-                m_model,
-                location->isInverted() ? glm::pi<float>() : 0.0f,
-                glm::vec3(0.0f, 0.0f, 1.0f)
-                          );
     
     // TODO: FINISH IT!!!!
     
     Tile *prevTile = m_tail.front();
     glm::vec2 axis;
+    glm::vec3 shift(0.0f);
     if (!location->isInverted())
     {
         if (m_field->getTileByDir(prevTile, Direction::LEFT))
         {
             axis = location->getPointUp(0.0) - location->getPointLeft(0.0);
+            shift.x = (-3.0f) / 8.0f;
+            shift.y = Snaky::topPointY() / 2.0f;
         }
         else if (m_field->getTileByDir(prevTile, Direction::RIGHT))
         {
             axis = location->getPointUp(0.0) - location->getPointRight(0.0);
+            shift.x = 3.0f / 8.0f;
+            shift.y = Snaky::topPointY() / 2.0f;
         }
         else if (m_field->getTileByDir(prevTile, Direction::DOWN))
         {
             axis = location->getPointLeft(0.0) - location->getPointRight(0.0);
+            shift.y = Snaky::topPointY() / 2.0f;
         }
     }
     else
@@ -183,21 +311,39 @@ void Snaky::drawMovingPiece(Tile *location)
         if (m_field->getTileByDir(prevTile, Direction::LEFT))
         {
             axis = location->getPointUp(0.0) - location->getPointLeft(0.0);
+            shift.y = 3.0f / 8.0f;
+            shift.x = Snaky::topPointY() / 2.0f;
         }
         else if (m_field->getTileByDir(prevTile, Direction::RIGHT))
         {
             axis = location->getPointUp(0.0) - location->getPointRight(0.0);
+            shift.y = 3.0f / 8.0f;
+            shift.x = - Snaky::topPointY() / 2.0f;
         }
         else if (m_field->getTileByDir(prevTile, Direction::UP))
         {
             axis = location->getPointLeft(0.0) - location->getPointRight(0.0);
+            shift.y = Snaky::topPointY() / 2.0f;
         }
     }
-        
+    
+//    m_model = glm::translate(
+//                m_model,
+//                -shift
+//                );
     m_model = glm::rotate(
                 m_model,
                 m_rot,
                 glm::vec3(axis.x, axis.y, 0.0f)
+                );
+//    m_model = glm::translate(
+//                m_model,
+//                shift
+//                );
+    m_model = glm::rotate(
+                m_model,
+                location->isInverted() ? glm::pi<float>() : 0.0f,
+                glm::vec3(0.0f, 0.0f, 1.0f)
                           );
     
     glUniformMatrix4fv(m_modelMatLoc, 1, GL_FALSE, &m_model[0][0]);

@@ -39,6 +39,7 @@ public:
     void addFood() {m_tileType = TileType::FOOD;};
     void eatFood() {m_tileType = TileType::SOLID;};
     bool haveFood() {return m_tileType == TileType::FOOD;};
+    bool isSolid() {return m_tileType == TileType::SOLID;};
     const std::set<Snaky *> & getSnaky() {return m_snaky;};
     void addSnaky(Snaky *snaky) {m_snaky.insert(snaky);};
     void remSnaky(Snaky *snaky) {m_snaky.erase(snaky);};

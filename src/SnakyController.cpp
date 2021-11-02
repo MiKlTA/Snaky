@@ -12,9 +12,12 @@ SnakyController::SnakyController(Snaky *puppet)
 
 void SnakyController::onTick()
 {
-    m_puppet->finishMoving();
-    Tile *t = m_puppet->nextTile();
-    if (t == nullptr) return; // TODO: destroy snaky
+    m_puppet->finishMovingAnimation();
+    
+    m_puppet->updateTrajectory();
+    Tile *t = m_puppet->getNextTile();
+    if (t == nullptr) return; //
+    if (t->isSolid()) return; // TODO: destroy snaky
     
     // eating
     if (t->haveFood())
@@ -29,5 +32,8 @@ void SnakyController::onTick()
         // TODO: what happens after death
     }
     
-    m_puppet->startMoveNow();
+    // moving
+    m_puppet->move();
+    
+    m_puppet->startMovingAnimation();
 }

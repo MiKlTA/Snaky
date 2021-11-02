@@ -21,26 +21,27 @@ int main()
     Camera *camera = new Camera;
     Render::inst()->bindCamera(camera);
     
-    Field field(Render::inst(), glm::ivec2(20, 10));
+    Field field(Render::inst(), glm::ivec2(50, 25));
     Tile **tail = new Tile*[9]
     {
-        field.getTile(4, 1),
-        field.getTile(4, 2),
-        field.getTile(3, 2),
-        field.getTile(2, 2),
-        field.getTile(1, 2),
-        field.getTile(1, 3),
-        field.getTile(1, 2),
-        field.getTile(1, 2),
-        field.getTile(1, 1)
+        field.getTile(14, 11),
+        field.getTile(14, 12),
+        field.getTile(13, 12),
+        field.getTile(12, 12),
+        field.getTile(11, 12),
+        field.getTile(11, 13),
+        field.getTile(12, 13),
+        field.getTile(13, 13),
+        field.getTile(14, 13)
     };
     Snaky snaky(
                 Render::inst(),
                 &field,
-                field.getTile(5, 1),
+                field.getTile(15, 11),
                 tail, 9,
                 glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
                 );
+    snaky.setTrajectoryPoint(glm::ivec2(10, 20));
     SnakyController sController(&snaky);
     
     Rectangle rect(

@@ -6,14 +6,15 @@
 
 Camera::Camera()
     : Timer(updDelay()),
-      m_pos(0.0f, 0.0f, -1.0f),
+      m_pos(10.0f, 10.0f, -1.0f),
       m_rot(0.0f),
       // TODO: change to 1.0f
-      m_size(10.0f),
+      m_size(30.0f),
       // TODO: change to 0.5f
       m_proj(glm::ortho(
                  -m_size.x/2.0f, m_size.x/2.0f,
-                 -m_size.y/2.0f, m_size.y/2.0f
+                 -m_size.y/2.0f, m_size.y/2.0f,
+                 -100.0f, 100.0f
                  )),
       m_horizontal(Moving::NONE),
       m_vertical(Moving::NONE),
@@ -110,7 +111,8 @@ void Camera::onTick()
         m_size.x *= 1.03f;
         m_proj = glm::ortho(
                     -m_size.x/2.0f, m_size.x/2.0f,
-                    -m_size.x/2.0f, m_size.x/2.0f
+                    -m_size.x/2.0f, m_size.x/2.0f,
+                    -100.0f, 100.0f
                     );
     }
     else if (m_zoom == Moving::BACK)
@@ -118,7 +120,8 @@ void Camera::onTick()
         m_size.x /= 1.03f;
         m_proj = glm::ortho(
                     -m_size.x/2.0f, m_size.x/2.0f,
-                    -m_size.x/2.0f, m_size.x/2.0f
+                    -m_size.x/2.0f, m_size.x/2.0f,
+                    -100.0f, 100.0f
                     );
     }
 }

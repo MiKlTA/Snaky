@@ -23,10 +23,10 @@ public:
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
     
-    Tile * getTile(int x, int y) {return m_tiles[x][y];};
+    Tile * getTile(int x, int y);
     Tile ** getTilesNear(const Tile *tile, int &count);
     Tile * getTileByDir(const Tile *tile, Direction dir);
-    Tile * getTileOnLine(glm::ivec2 startPoint, float tanAngle, int n);
+    bool canMoveDirectlyTo(const Tile *from, const Tile *to);
     
     void moveSnaky(); // TODO:
     

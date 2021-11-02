@@ -31,15 +31,18 @@ public:
     void onTick() override;
     
     Tile * getHead() {return m_head;};
+    Tile * getNextTile();
     
-    void changeDirection(float dir);
-    void startMoveNow();
-    void finishMoving();
+    void move();
+    void startMovingAnimation();
+    void finishMovingAnimation();
+    void updateTrajectory();
+    void setTrajectoryPoint(glm::ivec2 p) {m_targetPoint = p;};
     
-    Tile * nextTile();
     void grow() {m_isGrowing = true;};
+    void die();
     
-    static double movingTime() {return 1.0;};
+    static double movingTime() {return 0.1;};
     
 private:
     Field *m_field;
@@ -47,13 +50,13 @@ private:
     std::list<Tile *> m_tail;
     
     bool m_isGrowing;
-    bool m_isMoving;
-    float m_direction;
-    int m_tilesPassed;
-    glm::ivec2 m_startPoint;
+    bool m_isMovingAnimation;
+    std::list<Tile *> m_trajectory;
+    glm::ivec2 m_targetPoint;
     
     float m_rot;
     
+    void makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY);
     void drawPiece(Tile *location);
     void drawMovingPiece(Tile *location);
     

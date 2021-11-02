@@ -46,6 +46,14 @@ void Field::draw(const glm::mat4 &view, const glm::mat4 &proj)
 
 
 
+Tile * Field::getTile(int x, int y)
+{
+    if (x < 0 || y < 0 || x >= m_size.x || y >= m_size.y)
+        return nullptr;
+    else
+        return m_tiles[x][y];
+}
+
 Tile ** Field::getTilesNear(const Tile *tile, int &count)
 {
     count = 0;
@@ -85,14 +93,16 @@ Tile * Field::getTileByDir(const Tile *tile, Direction dir)
     switch (dir)
     {
     case Direction::UP:
-        if (x != 0)
+        if (tile->isInverted() && y != m_size.y - 1)
         {
-            return getTile(x - 1, y);
+            return getTile(x, y + 1);
         }
         break;
     case Direction::RIGHT:
         if (x != m_size.x - 1)
         {
+            Tile *myTile = nullptr;
+            myTile = getTile(x + 1, y);
             return getTile(x + 1, y);
         }
         break;
@@ -103,9 +113,9 @@ Tile * Field::getTileByDir(const Tile *tile, Direction dir)
         }
         break;
     case Direction::LEFT:
-        if (y != m_size.y - 1)
+        if (x != 0)
         {
-            return getTile(x, y + 1);
+            return getTile(x - 1, y);
         }
         break;
     }
@@ -113,18 +123,15 @@ Tile * Field::getTileByDir(const Tile *tile, Direction dir)
     return nullptr;
 }
 
-Tile * Field::getTileOnLine(glm::ivec2 startPoint, float tanAngle, int n)
+bool Field::canMoveDirectlyTo(const Tile *from, const Tile *to)
 {
-    // TODO: does not work with tanAngle > 1.
-    // It should be reduced to the case with tanAngle < 1
-    
-    // y(n) = tanAngle * (n + startPoint.x) + startPoint.y
-    int targetX = n + startPoint.x;
-    int targetY = std::round(tanAngle * targetX) + startPoint.y;
-    if (targetY >= m_size.y || targetX >= m_size.x)
-        return nullptr;
-    else
-        return m_tiles[targetX][targetY];
+    if (getTileByDir(from, Direction::UP) == to && from->isInverted())
+        return true;
+    if (getTileByDir(from, Direction::RIGHT) == to) return true;
+    if (getTileByDir(from, Direction::DOWN) == to && !from->isInverted())
+        return true;
+    if (getTileByDir(from, Direction::LEFT) == to) return true;
+    return false;
 }
 
 
