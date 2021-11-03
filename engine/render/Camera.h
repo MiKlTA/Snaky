@@ -41,7 +41,11 @@ public:
     const glm::mat4 & getProj() const {return m_proj;};
     
     glm::vec2 getViewSize() const {return m_size;};
-    void setViewSize(float w, float h);
+    
+    // normalized window coordinates to OpenGL space coordinates
+    glm::vec2 convertToWorldCoords(glm::vec2 point);
+    // on the contrary
+    glm::vec2 convertToScreenCoords(glm::vec2 point);
     
 private:
     glm::vec3 m_pos;

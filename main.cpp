@@ -16,12 +16,13 @@
 
 int main()
 {
+    srand(100);
     std::cout << "HELLOOOOOOOOOO WORLD!!!!" << std::endl;
     
     Camera *camera = new Camera;
     Render::inst()->bindCamera(camera);
     
-    Field field(Render::inst(), glm::ivec2(50, 25));
+    Field field(Render::inst(), glm::ivec2(50, 30));
     Tile **tail = new Tile*[9]
     {
         field.getTile(14, 11),

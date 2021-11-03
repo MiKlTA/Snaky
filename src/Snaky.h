@@ -42,7 +42,7 @@ public:
     void grow() {m_isGrowing = true;};
     void die();
     
-    static double movingTime() {return 0.1;};
+    static double movingTime() {return 1.0;};
     
 private:
     Field *m_field;
@@ -58,7 +58,7 @@ private:
     
     void makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY);
     void drawPiece(Tile *location);
-    void drawMovingPiece(Tile *location);
+    void drawMovingPiece(Tile *previous, Tile *location, float rot);
     
     glm::mat4 m_model;
     glm::vec4 m_color;
@@ -75,8 +75,8 @@ private:
     static void makeModel();
     
     static float topPointY() {return std::sqrt(3.0f)/4.0f;};
-    static int stageOfMoving() {return 20;};
-    static float maxAngle() {return glm::pi<float>()/2.0f;};
+    static int stageOfMoving() {return 30;};
+    static float maxAngle() {return glm::pi<float>();};
     static float deltaAngle() {return maxAngle()/(stageOfMoving() * 1.0f);};
 };
 

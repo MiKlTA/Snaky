@@ -23,8 +23,6 @@ add_executable(SSnaky
     src/FoodCreator.h
     src/Initializer.cpp
     src/Initializer.h
-    src/MouseHandler.cpp
-    src/MouseHandler.h
     src/Player.cpp
     src/Player.h
     src/Snaky.cpp

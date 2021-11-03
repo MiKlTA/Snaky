@@ -61,6 +61,15 @@ Window::Window()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
     m_window = glfwCreateWindow(640, 640, "Snaky", nullptr, nullptr);
+    
+    // make the game window square
+    int x, y, w, h;
+    glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &x, &y, &w, &h);
+    glfwSetWindowAspectRatio(m_window, 1, 1);
+    glfwSetWindowSizeLimits(
+                m_window, GLFW_DONT_CARE, GLFW_DONT_CARE, h, h
+                            );
+    
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1);
     

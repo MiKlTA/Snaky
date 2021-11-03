@@ -140,3 +140,17 @@ glm::mat4 Camera::getView() const
 {
     return glm::translate(glm::mat4(1.0f), -m_pos);
 }
+
+
+
+glm::vec2 Camera::convertToWorldCoords(glm::vec2 point)
+{
+    glm::vec4 p(point.x, point.y, 0.0f, 1.0f);
+    glm::vec4 res = getView() * (getProj() * p);
+    return glm::vec2(res.x, res.y);
+}
+
+glm::vec2 Camera::convertToScreenCoords(glm::vec2 point)
+{
+    
+}

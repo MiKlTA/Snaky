@@ -70,14 +70,26 @@ void Snaky::draw(const glm::mat4 &view, const glm::mat4 &proj)
     glUniformMatrix4fv(m_viewMatLoc, 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(m_projMatLoc, 1, GL_FALSE, &proj[0][0]);
     glUniform4fv(m_colorLoc, 1, &m_color[0]);
+    // TODO: make a gradient!!!
     
     if (m_isMovingAnimation)
-        drawMovingPiece(m_head);
+    {
+        drawMovingPiece(m_tail.front(), m_head, m_rot);
+        if (m_tail.size() > 1)
+        {
+            drawMovingPiece(
+                        *std::prev(m_tail.end(), 2),
+                        m_tail.back(),
+                        maxAngle() - m_rot
+                        );
+        }
+    }
     else
         drawPiece(m_head);
-    for (auto t : m_tail)
+    for (auto i = m_tail.begin(); i != m_tail.end(); ++i)
     {
-        drawPiece(t);
+        if (m_tail.size() > 1 && i == std::prev(m_tail.end(), 1)) break;
+        drawPiece(*i);
     }
 }
 
@@ -276,70 +288,70 @@ void Snaky::drawPiece(Tile *location)
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-void Snaky::drawMovingPiece(Tile *location)
+void Snaky::drawMovingPiece(Tile *previous, Tile *location, float rot)
 {
     //m_model = glm::mat4(1.0f);
     m_model = glm::translate(glm::mat4(1.0f), glm::vec3(location->getPos()));
     
-    // TODO: FINISH IT!!!!
-    
-    Tile *prevTile = m_tail.front();
     glm::vec2 axis;
     glm::vec3 shift(0.0f);
+    const float offset = Field::distance() / 2.0f;
+    const float d = std::sqrt(3.0f) / 8.0f + offset;
+    
     if (!location->isInverted())
     {
-        if (m_field->getTileByDir(prevTile, Direction::LEFT))
+        if (previous == m_field->getTileByDir(location, Direction::LEFT))
         {
             axis = location->getPointUp(0.0) - location->getPointLeft(0.0);
-            shift.x = (-3.0f) / 8.0f;
-            shift.y = Snaky::topPointY() / 2.0f;
+            shift.x = (std::sqrt(3.0f) / 2.0f) * d;
+            shift.y = -d / 2.0f;
         }
-        else if (m_field->getTileByDir(prevTile, Direction::RIGHT))
+        else if (previous == m_field->getTileByDir(location, Direction::RIGHT))
         {
             axis = location->getPointUp(0.0) - location->getPointRight(0.0);
-            shift.x = 3.0f / 8.0f;
-            shift.y = Snaky::topPointY() / 2.0f;
+            shift.x = -(std::sqrt(3.0f) / 2.0f) * d;
+            shift.y = -d / 2.0f;
         }
-        else if (m_field->getTileByDir(prevTile, Direction::DOWN))
+        else if (previous == m_field->getTileByDir(location, Direction::DOWN))
         {
             axis = location->getPointLeft(0.0) - location->getPointRight(0.0);
-            shift.y = Snaky::topPointY() / 2.0f;
+            shift.y = 2 * d - offset;
         }
     }
     else
     {
-        if (m_field->getTileByDir(prevTile, Direction::LEFT))
-        {
-            axis = location->getPointUp(0.0) - location->getPointLeft(0.0);
-            shift.y = 3.0f / 8.0f;
-            shift.x = Snaky::topPointY() / 2.0f;
-        }
-        else if (m_field->getTileByDir(prevTile, Direction::RIGHT))
+        if (previous == m_field->getTileByDir(location, Direction::LEFT))
         {
             axis = location->getPointUp(0.0) - location->getPointRight(0.0);
-            shift.y = 3.0f / 8.0f;
-            shift.x = - Snaky::topPointY() / 2.0f;
+            shift.x = (std::sqrt(3.0f) / 2.0f) * d;
+            shift.y = d / 2.0f;
         }
-        else if (m_field->getTileByDir(prevTile, Direction::UP))
+        else if (previous == m_field->getTileByDir(location, Direction::RIGHT))
+        {
+            axis = location->getPointUp(0.0) - location->getPointLeft(0.0);
+            shift.x = -(std::sqrt(3.0f) / 2.0f) * d;
+            shift.y = d / 2.0f;
+        }
+        else if (previous == m_field->getTileByDir(location, Direction::UP))
         {
             axis = location->getPointLeft(0.0) - location->getPointRight(0.0);
-            shift.y = Snaky::topPointY() / 2.0f;
+            shift.y = -(2 * d - offset);
         }
     }
     
-//    m_model = glm::translate(
-//                m_model,
-//                -shift
-//                );
+    m_model = glm::translate(
+                m_model,
+                -shift
+                );
     m_model = glm::rotate(
                 m_model,
-                m_rot,
+                rot,
                 glm::vec3(axis.x, axis.y, 0.0f)
                 );
-//    m_model = glm::translate(
-//                m_model,
-//                shift
-//                );
+    m_model = glm::translate(
+                m_model,
+                shift
+                );
     m_model = glm::rotate(
                 m_model,
                 location->isInverted() ? glm::pi<float>() : 0.0f,
@@ -360,9 +372,9 @@ void Snaky::makeModel()
     m_modelsVerticesCount = 9;
     m_modelsVertices = new GLfloat[m_modelsVerticesCount]
     {
-        0.0f, topPointY(), 0.0f,
         0.5f, -topPointY(), 0.0f,
-        -0.5f, -topPointY(), 0.0f
+        -0.5f, -topPointY(), 0.0f,
+        0.0f, topPointY(), 0.0f
     };
     
     glGenBuffers(1, &m_VBO);
