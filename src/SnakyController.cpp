@@ -29,7 +29,7 @@ void SnakyController::onTick()
     }
     
     // diyng
-    if (t->getSnaky().empty() && !t->isPeaceful())
+    if (t->haveSnaky() && !t->isPeaceful())
     {
         // TODO: what happens after death
     }

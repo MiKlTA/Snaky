@@ -38,12 +38,12 @@ public:
     void finishMovingAnimation();
     void updateTrajectory();
     void setTrajectory(Tile *tile);
-    void setTrajectoryPoint(glm::ivec2 p) {m_targetPoint = p;};
+    void setTrajectoryPoint(glm::ivec2 p);
     
     void grow() {m_isGrowing = true;};
     void die();
     
-    static double movingTime() {return 0.1;};
+    static double movingTime() {return 0.3;};
     
 private:
     Field *m_field;
@@ -53,7 +53,8 @@ private:
     bool m_isGrowing;
     bool m_isMovingAnimation;
     std::list<Tile *> m_trajectory;
-    glm::ivec2 m_targetPoint;
+    // how much is the target point shifted relative to the head
+    glm::ivec2 m_relTargetPoint;
     
     float m_rot;
     

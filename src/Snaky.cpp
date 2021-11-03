@@ -36,7 +36,7 @@ Snaky::Snaky(
       m_isGrowing(false),
       m_isMovingAnimation(false),
       m_trajectory(),
-      m_targetPoint(0.0f),
+      m_relTargetPoint(0.0f),
       
       m_rot(maxAngle()),
       
@@ -156,15 +156,16 @@ void Snaky::updateTrajectory()
     {
         // DLT:
         // m_targetPoint = glm::ivec2(rand() % 49 + 1, rand() % 24 + 1);
+        const glm::ivec2 targetPoint = m_relTargetPoint + m_head->getFieldPos();
         Log::inst()->message("New target: "
-                    + std::to_string(m_targetPoint.x)
+                    + std::to_string(targetPoint.x)
                     + " | "
-                    + std::to_string(m_targetPoint.y)
+                    + std::to_string(targetPoint.y)
                     );
         Log::inst()->printLog(1);
         
-        int x = m_targetPoint.x - m_head->getFieldPos().x;
-        int y = m_targetPoint.y - m_head->getFieldPos().y;
+        int x = m_relTargetPoint.x;
+        int y = m_relTargetPoint.y;
         float tanAngle = y / (x * 1.0f);
         bool xIsN = x < 0;
         bool yIsN = y < 0.0f;
@@ -199,16 +200,17 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
     int x = 0;
     int y = 0;
     Tile *next = nullptr;
+    const glm::ivec2 targetPoint = m_relTargetPoint + m_head->getFieldPos();
     
     if (tanAngle <= 1.0f)
     {
         // TODO: think about how to cram it into one cycle and make it easier
-        for (int i = 1; !(x == m_targetPoint.x && y == m_targetPoint.y); ++i)
+        for (int i = 1; !(x == targetPoint.x && y == targetPoint.y); ++i)
         {
             x = kx * i + shiftX;
             y = ky * std::round(tanAngle * i) + shiftY;
             next = m_field->getTile(x, y);
-            if (next == nullptr) return;
+            if (next == nullptr || next->haveSnaky(this)) return;
             
             Tile *prev;
             if (!m_trajectory.empty())
@@ -224,7 +226,7 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
                     bridge = m_field->getTile(x, y - 1*ky);
                 else
                     bridge = m_field->getTile(x - 1*kx, y);
-                if (bridge == nullptr) return;
+                if (bridge == nullptr || next->haveSnaky(this)) return;
                 m_trajectory.push_front(bridge);
             }
             
@@ -233,12 +235,12 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
     }
     else
     {
-        for (int i = 1; !(x == m_targetPoint.x && y == m_targetPoint.y); ++i)
+        for (int i = 1; !(x == targetPoint.x && y == targetPoint.y); ++i)
         {
             x = kx * std::round(i / tanAngle) + shiftX;
             y = ky * i + shiftY;
             next = m_field->getTile(x, y);
-            if (next == nullptr) return;
+            if (next == nullptr || next->haveSnaky(this)) return;
             
             Tile *prev;
             if (!m_trajectory.empty())
@@ -257,7 +259,7 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
                     // if you want to teach a snake to bypass =
                     // single obstacles - add here
                     bridge = m_field->getTile(x + 1*kx, y - 1*ky);
-                    if (bridge == nullptr) return;
+                    if (bridge == nullptr || next->haveSnaky(this)) return;
                     m_trajectory.push_front(bridge);
                     bridge = m_field->getTile(x + 1*kx, y);
                 }
@@ -266,7 +268,7 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
                     bridge = m_field->getTile(x, y - 1*ky);
                 else
                     bridge = m_field->getTile(x - 1*kx, y);
-                if (bridge == nullptr) return;
+                if (bridge == nullptr || next->haveSnaky(this)) return;
                 m_trajectory.push_front(bridge);
             }
             
@@ -279,6 +281,13 @@ void Snaky::setTrajectory(Tile *tile)
 {
     m_trajectory.clear();
     m_trajectory.push_front(tile);
+}
+
+void Snaky::setTrajectoryPoint(glm::ivec2 p)
+{
+    m_trajectory.clear();
+    m_relTargetPoint = p - m_head->getFieldPos();
+    updateTrajectory();
 }
 
 

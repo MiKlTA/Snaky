@@ -70,6 +70,18 @@ void Tile::draw(const glm::mat4 &view, const glm::mat4 &proj)
 
 
 
+bool Tile::haveSnaky(Snaky *snaky)
+{
+    return m_snaky.find(snaky) != m_snaky.end();
+}
+
+bool Tile::haveSnaky()
+{
+    return !m_snaky.empty();
+}
+
+
+
 glm::vec2 Tile::getPointUp(float d)
 {
     return glm::vec2(m_pos.x, m_pos.y + topPointY() + d);
