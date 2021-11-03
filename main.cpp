@@ -43,7 +43,7 @@ int main()
                 glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
                 );
     snaky.setTrajectoryPoint(glm::ivec2(10, 20));
-    SnakyController sController(&snaky);
+    SnakyController sController(&snaky, camera, &field);
     
     Rectangle rect(
                 Render::inst(), glm::vec4(0.5f, 0.4f, 0.8f, 1.0f),

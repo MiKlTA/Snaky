@@ -54,6 +54,19 @@ Tile * Field::getTile(int x, int y)
         return m_tiles[x][y];
 }
 
+Tile * Field::getTile(glm::vec2 pos)
+{
+    glm::ivec2 fieldPos;
+    fieldPos.x = (pos.x / xDelta() + 0.5f);
+    fieldPos.y = (pos.y / yDelta() + 0.5f);
+    // DLT: debug output
+    /*Log::inst()->message(std::to_string(fieldPos.x)
+                         + " | "
+                         + std::to_string(fieldPos.y));
+    Log::inst()->printLog(1);*/
+    return getTile(fieldPos.x, fieldPos.y);
+}
+
 Tile ** Field::getTilesNear(const Tile *tile, int &count)
 {
     count = 0;

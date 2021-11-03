@@ -46,6 +46,14 @@ void Window::startWindowCycle()
 }
 
 
+glm::ivec2 Window::getSize()
+{
+    int w, h;
+    glfwGetWindowSize(m_window, &w, &h);
+    return glm::ivec2(w, h);
+}
+
+
 
 // private
 

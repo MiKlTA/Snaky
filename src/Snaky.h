@@ -37,12 +37,13 @@ public:
     void startMovingAnimation();
     void finishMovingAnimation();
     void updateTrajectory();
+    void setTrajectory(Tile *tile);
     void setTrajectoryPoint(glm::ivec2 p) {m_targetPoint = p;};
     
     void grow() {m_isGrowing = true;};
     void die();
     
-    static double movingTime() {return 1.0;};
+    static double movingTime() {return 0.1;};
     
 private:
     Field *m_field;

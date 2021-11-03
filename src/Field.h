@@ -24,6 +24,7 @@ public:
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
     
     Tile * getTile(int x, int y);
+    Tile * getTile(glm::vec2 pos);
     Tile ** getTilesNear(const Tile *tile, int &count);
     Tile * getTileByDir(const Tile *tile, Direction dir);
     bool canMoveDirectlyTo(const Tile *from, const Tile *to);

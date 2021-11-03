@@ -32,6 +32,8 @@ public:
     void revWindowActiveListener(WindowActiveListener *wal);
     
 	void startWindowCycle();
+    
+    glm::ivec2 getSize();
 	
 private:
     Window();

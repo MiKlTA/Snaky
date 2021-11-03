@@ -6,10 +6,10 @@
 
 Camera::Camera()
     : Timer(updDelay()),
-      m_pos(10.0f, 10.0f, -1.0f),
+      m_pos(0.0f, 0.0f, -1.0f),
       m_rot(0.0f),
       // TODO: change to 1.0f
-      m_size(30.0f),
+      m_size(1.0f),
       // TODO: change to 0.5f
       m_proj(glm::ortho(
                  -m_size.x/2.0f, m_size.x/2.0f,
@@ -108,19 +108,19 @@ void Camera::onTick()
     // DLT:
     if (m_zoom == Moving::FORWARD)
     {
-        m_size.x *= 1.03f;
+        m_size *= 1.03f;
         m_proj = glm::ortho(
                     -m_size.x/2.0f, m_size.x/2.0f,
-                    -m_size.x/2.0f, m_size.x/2.0f,
+                    -m_size.y/2.0f, m_size.y/2.0f,
                     -100.0f, 100.0f
                     );
     }
     else if (m_zoom == Moving::BACK)
     {
-        m_size.x /= 1.03f;
+        m_size /= 1.03f;
         m_proj = glm::ortho(
                     -m_size.x/2.0f, m_size.x/2.0f,
-                    -m_size.x/2.0f, m_size.x/2.0f,
+                    -m_size.y/2.0f, m_size.y/2.0f,
                     -100.0f, 100.0f
                     );
     }
@@ -145,9 +145,16 @@ glm::mat4 Camera::getView() const
 
 glm::vec2 Camera::convertToWorldCoords(glm::vec2 point)
 {
-    glm::vec4 p(point.x, point.y, 0.0f, 1.0f);
-    glm::vec4 res = getView() * (getProj() * p);
-    return glm::vec2(res.x, res.y);
+    point.y = 1.0f - point.y;
+    point -= 0.5f;
+    
+    point.x *= m_size.x;
+    point.y *= m_size.y;
+    
+    point.x += m_pos.x;
+    point.y += m_pos.y;
+    
+    return point;
 }
 
 glm::vec2 Camera::convertToScreenCoords(glm::vec2 point)

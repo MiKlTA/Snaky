@@ -113,11 +113,11 @@ void Snaky::move()
     if (m_trajectory.empty()) return;
     Tile *back = m_trajectory.back();
     // DLT:
-    Log::inst()->message(
-                std::to_string(back->getFieldPos().x)
-                + " | "
-                + std::to_string(back->getFieldPos().y)
-                );
+//    Log::inst()->message(
+//                std::to_string(back->getFieldPos().x)
+//                + " | "
+//                + std::to_string(back->getFieldPos().y)
+//                );
     Log::inst()->printLog(1);
     m_trajectory.pop_back();
     back->addSnaky(this);
@@ -155,7 +155,7 @@ void Snaky::updateTrajectory()
     if (m_trajectory.empty())
     {
         // DLT:
-        m_targetPoint = glm::ivec2(rand() % 49 + 1, rand() % 24 + 1);
+        // m_targetPoint = glm::ivec2(rand() % 49 + 1, rand() % 24 + 1);
         Log::inst()->message("New target: "
                     + std::to_string(m_targetPoint.x)
                     + " | "
@@ -274,6 +274,14 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
         }
     }
 }
+
+void Snaky::setTrajectory(Tile *tile)
+{
+    m_trajectory.clear();
+    m_trajectory.push_front(tile);
+}
+
+
 
 void Snaky::drawPiece(Tile *location)
 {
