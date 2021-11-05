@@ -106,7 +106,7 @@ Render::Render()
 {
     glewExperimental = true;
     glewInit();
-    glClearColor(0.7f, 0.5f, 0.3f, 1.0f);
+    glClearColor(0.9f, 1.0f, 0.9f, 1.0f);
     
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(messageCallback, 0);

@@ -43,9 +43,11 @@ Snaky::Snaky(
       m_model(1.0f),
       m_color(color)
 {
+    m_head->addSnaky(this);
     for (int i = 0; i < tailLength; ++i)
     {
         m_tail.push_back(tail[i]);
+        tail[i]->addSnaky(this);
     }
     
     makeModel();
@@ -200,10 +202,21 @@ void Snaky::die()
     for (auto t : m_tail)
     {
         t->remSnaky(this);
-        FoodCreator::inst()->addFood(t);
+        if (t != m_tail.back())
+            FoodCreator::inst()->addFood(t);
     }
     m_head->remSnaky(this);
-    FoodCreator::inst()->addFood(m_head);
+}
+
+
+
+bool Snaky::isCrossingItself()
+{
+    for (auto t : m_tail)
+    {
+        if (t == m_head) return true;
+    }
+    return false;
 }
 
 
@@ -238,7 +251,7 @@ void Snaky::makeTrajectory(
             x = kx * i + shiftX;
             y = ky * std::round(tanAngle * i) + shiftY;
             next = m_field->getTile(x, y);
-            if (next == nullptr || next->haveSnaky(this)) return;
+            if (next == nullptr || next == m_tail.front()) return;
             
             Tile *prev;
             if (!trajectory.empty())
@@ -254,7 +267,7 @@ void Snaky::makeTrajectory(
                     bridge = m_field->getTile(x, y - 1*ky);
                 else
                     bridge = m_field->getTile(x - 1*kx, y);
-                if (bridge == nullptr || bridge->haveSnaky(this)) return;
+                if (bridge == nullptr || bridge == m_tail.front()) return;
                 trajectory.push_front(bridge);
             }
             
@@ -268,7 +281,7 @@ void Snaky::makeTrajectory(
             x = kx * std::round(i / tanAngle) + shiftX;
             y = ky * i + shiftY;
             next = m_field->getTile(x, y);
-            if (next == nullptr || next->haveSnaky(this)) return;
+            if (next == nullptr || next == m_tail.front()) return;
             
             Tile *prev;
             if (!trajectory.empty())
@@ -287,7 +300,7 @@ void Snaky::makeTrajectory(
                     // if you want to teach a snake to bypass =
                     // single obstacles - add here
                     bridge = m_field->getTile(x + 1*kx, y - 1*ky);
-                    if (bridge == nullptr || bridge->haveSnaky(this)) return;
+                    if (bridge == nullptr || bridge == m_tail.front()) return;
                     trajectory.push_front(bridge);
                     bridge = m_field->getTile(x + 1*kx, y);
                 }
@@ -296,7 +309,7 @@ void Snaky::makeTrajectory(
                     bridge = m_field->getTile(x, y - 1*ky);
                 else
                     bridge = m_field->getTile(x - 1*kx, y);
-                if (bridge == nullptr || bridge->haveSnaky(this)) return;
+                if (bridge == nullptr || bridge == m_tail.front()) return;
                 trajectory.push_front(bridge);
             }
             

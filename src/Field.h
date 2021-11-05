@@ -34,7 +34,7 @@ public:
     const glm::ivec2 & getSize() const {return m_size;};
     
     static glm::vec3 getTilePos(int x, int y);
-    static float distance() {return 0.08f;};
+    static float distance() {return 0.05f;};
     
 private:
     glm::ivec2 m_size;

@@ -43,6 +43,7 @@ public:
     void remSnaky(Snaky *snaky) {m_snaky.erase(snaky);};
     bool haveSnaky(Snaky *snaky);
     bool haveSnaky();
+    bool isSnakyUnique();
     
     // returns the position of the triangle point
     // with an offset from the center d

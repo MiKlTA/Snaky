@@ -21,15 +21,21 @@ void SnakyController::onTick()
     
     // moving
     Tile *head = m_puppet->getHead();
-    m_puppet->move();
     
-    if (head->isSolid())
-    {
-        m_puppet->die();
-        delete m_puppet;
-        pause();
-        return;
-    }
+    if (!head->isPeaceful())
+        if ((head->haveSnaky() && !head->isSnakyUnique())
+                || head->isSolid()
+                || m_puppet->isCrossingItself()
+                )
+        {
+            m_puppet->die();
+            delete m_puppet;
+            m_puppet = nullptr;
+            pause();
+            return;
+        }
+    
+    m_puppet->move();
     
     // eating
     if (head->haveFood())
@@ -39,12 +45,6 @@ void SnakyController::onTick()
         m_puppet->grow();
     }
     
-    // diyng
-    if (head->haveSnaky() && !head->isPeaceful())
-    {
-        // TODO: what happens after death
-    }
-    
     m_puppet->startMovingAnimation();
 }
 
@@ -52,6 +52,7 @@ void SnakyController::onTick()
 
 void SnakyController::onMouseLeftClick()
 {
+    if (m_puppet == nullptr) return;
     const glm::ivec2 windowSize = Window::inst()->getSize();
     const glm::ivec2 mousePos = Mouse::inst()->getPos();
     glm::vec2 nMousePos = glm::intBitsToFloat(mousePos)

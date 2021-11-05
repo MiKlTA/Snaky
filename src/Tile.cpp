@@ -48,10 +48,10 @@ Tile::Tile(
         if (m_isPeaceful)
             m_color = glm::vec4(0.75f, 1.0f, 0.95f, 1.0f);
         else
-            m_color = glm::vec4(1.0f, 0.95f, 0.83f, 1.0f);
+            m_color = glm::vec4(0.5f, 1.0f, 0.5f, 1.0f);
         break;
     case TileType::SOLID:
-        m_color = glm::vec4(0.6f, 0.45f, 0.3f, 1.0f);
+        m_color = glm::vec4(0.5f, 0.45f, 0.3f, 1.0f);
         break;
     }
 }
@@ -65,8 +65,6 @@ void Tile::draw(const glm::mat4 &view, const glm::mat4 &proj)
     glUniformMatrix4fv(m_modelMatLoc, 1, GL_FALSE, &m_model[0][0]);
     glUniformMatrix4fv(m_viewMatLoc, 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(m_projMatLoc, 1, GL_FALSE, &proj[0][0]);
-    if (m_tileType == TileType::SOLID)
-        m_color /= 4.0f;
     glUniform4fv(m_colorLoc, 1, &m_color[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     if (m_tileType == TileType::FOOD)
@@ -87,6 +85,11 @@ bool Tile::haveSnaky(Snaky *snaky)
 bool Tile::haveSnaky()
 {
     return !m_snaky.empty();
+}
+
+bool Tile::isSnakyUnique()
+{
+    return m_snaky.size() == 1;
 }
 
 

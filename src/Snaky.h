@@ -48,6 +48,8 @@ public:
     void grow() {m_isGrowing = true;};
     void die();
     
+    bool isCrossingItself();
+    
     static double movingTime() {return 1.0;};
     
 private:
