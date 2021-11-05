@@ -34,12 +34,11 @@ public:
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
     
-    
-    
     void addFood() {m_tileType = TileType::FOOD;};
-    void eatFood() {m_tileType = TileType::SOLID;};
+    void eatFood() {m_tileType = TileType::VOID;};
     bool haveFood() {return m_tileType == TileType::FOOD;};
     bool isSolid() {return m_tileType == TileType::SOLID;};
+    
     void addSnaky(Snaky *snaky) {m_snaky.insert(snaky);};
     void remSnaky(Snaky *snaky) {m_snaky.erase(snaky);};
     bool haveSnaky(Snaky *snaky);
@@ -68,6 +67,10 @@ private:
     const glm::vec3 m_scale;
     glm::mat4 m_model;
     glm::vec4 m_color;
+    
+    const glm::vec3 m_foodScale;
+    glm::mat4 m_foodModel;
+    const glm::vec4 m_foodColor;
     
     static bool m_modelIsDone;
     static GLfloat *m_modelsVertices;

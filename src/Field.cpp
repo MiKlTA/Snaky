@@ -12,8 +12,10 @@ Field::Field(Render *render, glm::ivec2 size)
         m_tiles[x] = new Tile*[m_size.y];
         for (int y = 0; y < m_size.y; ++y)
         {
+            Tile::TileType tt
+                    = rand() % 10 ? Tile::TileType::VOID : Tile::TileType::SOLID;
             m_tiles[x][y] = new Tile(
-                        render, Tile::TileType::VOID, glm::ivec2(x, y),
+                        render, tt, glm::ivec2(x, y),
                         false, (x + y) % 2 != 0
                                      );
         }

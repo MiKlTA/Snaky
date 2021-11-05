@@ -3,7 +3,12 @@
 
 
 
+// TODO: move the Trajectory to a separate class!
+
+
+
 #include <list>
+#include <algorithm>
 
 #include "../engine/render/RenderingObject.h"
 #include "../engine/handle/Timer.h"
@@ -11,7 +16,7 @@
 
 #include "Tile.h"
 #include "Field.h"
-
+#include "FoodCreator.h"
 
 
 
@@ -36,14 +41,14 @@ public:
     void move();
     void startMovingAnimation();
     void finishMovingAnimation();
-    void updateTrajectory();
+    void repeatTrajectory();
     void setTrajectory(Tile *tile);
     void setTrajectoryPoint(glm::ivec2 p);
     
     void grow() {m_isGrowing = true;};
     void die();
     
-    static double movingTime() {return 0.3;};
+    static double movingTime() {return 1.0;};
     
 private:
     Field *m_field;
@@ -58,7 +63,11 @@ private:
     
     float m_rot;
     
-    void makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY);
+    void makeTrajectory(
+            std::list<Tile *> &trajectory, float tanAngle,
+            bool mirroredX, bool mirroredY);
+    void repeatTrajectory(std::list<Tile *> &trajectory);
+    
     void drawPiece(Tile *location);
     void drawMovingPiece(Tile *previous, Tile *location, float rot);
     

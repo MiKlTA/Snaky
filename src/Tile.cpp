@@ -27,10 +27,16 @@ Tile::Tile(
       m_snaky(),
       m_fieldPos(pos),
       m_isInverted(isInverted),
+      
       m_pos(Field::getTilePos(pos.x, pos.y)),
       m_rot(glm::pi<float>() * isInverted),
       m_scale(1.0f),
-      m_model(1.0f)
+      m_model(1.0f),
+      m_color(1.0f),
+      
+      m_foodScale(0.3f),
+      m_foodModel(1.0f),
+      m_foodColor(glm::vec4(1.0f, 0.7f, 0.3f, 1.0f))
 {
     makeModel();
     updModelMat();
@@ -38,19 +44,14 @@ Tile::Tile(
     switch (tt)
     {
     case TileType::VOID:
+    case TileType::FOOD:
         if (m_isPeaceful)
             m_color = glm::vec4(0.75f, 1.0f, 0.95f, 1.0f);
         else
             m_color = glm::vec4(1.0f, 0.95f, 0.83f, 1.0f);
         break;
     case TileType::SOLID:
-        m_color = glm::vec4(0.75f, 0.7f, 0.6f, 1.0f);
-        break;
-    case TileType::FOOD:
-        if (m_isPeaceful)
-            m_color = glm::vec4(0.7f, 1.0f, 0.95f, 1.0f);
-        else
-            m_color = glm::vec4(1.0f, 0.95f, 0.83f, 1.0f);
+        m_color = glm::vec4(0.6f, 0.45f, 0.3f, 1.0f);
         break;
     }
 }
@@ -64,8 +65,16 @@ void Tile::draw(const glm::mat4 &view, const glm::mat4 &proj)
     glUniformMatrix4fv(m_modelMatLoc, 1, GL_FALSE, &m_model[0][0]);
     glUniformMatrix4fv(m_viewMatLoc, 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(m_projMatLoc, 1, GL_FALSE, &proj[0][0]);
+    if (m_tileType == TileType::SOLID)
+        m_color /= 4.0f;
     glUniform4fv(m_colorLoc, 1, &m_color[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    if (m_tileType == TileType::FOOD)
+    {
+        glUniformMatrix4fv(m_modelMatLoc, 1, GL_FALSE, &m_foodModel[0][0]);
+        glUniform4fv(m_colorLoc, 1, &m_foodColor[0]);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
 }
 
 
@@ -154,7 +163,15 @@ void Tile::makeModel()
 
 void Tile::updModelMat()
 {
-    m_model = glm::translate(glm::mat4(1.0f), m_pos);
+    m_foodModel = m_model = glm::translate(glm::mat4(1.0f), m_pos);
     m_model = glm::rotate(m_model, m_rot, glm::vec3(0.0f, 0.0f, 1.0f));
     m_model = glm::scale(m_model, m_scale);
+    glm::vec3 shift(0.0f, -m_foodScale.y * topPointY() / 2.0f, 0.0f);
+    shift *= m_isInverted ? -1 : 1;
+    m_foodModel = glm::translate(m_foodModel, shift);
+//    m_foodModel = glm::rotate(
+//                m_foodModel, glm::pi<float>() - m_rot,
+//                glm::vec3(0.0f, 0.0f, 1.0f)
+//                              );
+    m_foodModel = glm::scale(m_foodModel, m_foodScale);
 }

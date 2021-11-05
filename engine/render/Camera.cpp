@@ -6,10 +6,10 @@
 
 Camera::Camera()
     : Timer(updDelay()),
-      m_pos(0.0f, 0.0f, -1.0f),
+      m_pos(10.0f, 10.0f, -1.0f),
       m_rot(0.0f),
       // TODO: change to 1.0f
-      m_size(1.0f),
+      m_size(30.0f),
       // TODO: change to 0.5f
       m_proj(glm::ortho(
                  -m_size.x/2.0f, m_size.x/2.0f,

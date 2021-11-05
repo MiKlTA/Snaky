@@ -9,6 +9,7 @@
 #include "engine/handle/Mouse.h"
 #include "engine/render/Window.h"
 #include "src/Field.h"
+#include "src/FoodCreator.h"
 
 
 
@@ -26,6 +27,7 @@ private:
     Snaky *m_puppet;
     Camera *m_camera;
     Field *m_field;
+    FoodCreator *m_foodCreator;
 };
 
 

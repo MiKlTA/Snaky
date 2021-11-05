@@ -14,9 +14,13 @@ public:
     void checkTime(double curTime);
     virtual void onTick() = 0;
     
+    void pause() {m_paused = true;};
+    void resume() {m_paused = false;};
+    
 private:
     const double m_delay;
     double m_lastUpdTime;
+    bool m_paused;
 };
 
 

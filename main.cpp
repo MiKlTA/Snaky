@@ -6,6 +6,7 @@
 #include "src/Field.h"
 #include "src/Snaky.h"
 #include "src/SnakyController.h"
+#include "src/FoodCreator.h"
 #include "engine/handle/GameCycle.h"
 #include "engine/render/Window.h"
 #include "engine/Log.h"
@@ -23,6 +24,7 @@ int main()
     Render::inst()->bindCamera(camera);
     
     Field field(Render::inst(), glm::ivec2(50, 30));
+    FoodCreator::inst()->bindField(&field);
     Tile **tail = new Tile*[9]
     {
         field.getTile(14, 11),
@@ -35,15 +37,15 @@ int main()
         field.getTile(13, 13),
         field.getTile(14, 13)
     };
-    Snaky snaky(
+    Snaky *snaky = new Snaky(
                 Render::inst(),
                 &field,
                 field.getTile(15, 11),
                 tail, 9,
                 glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
                 );
-    snaky.setTrajectoryPoint(glm::ivec2(10, 20));
-    SnakyController sController(&snaky, camera, &field);
+    snaky->setTrajectoryPoint(glm::ivec2(20, 10));
+    SnakyController sController(snaky, camera, &field);
     
     Rectangle rect(
                 Render::inst(), glm::vec4(0.5f, 0.4f, 0.8f, 1.0f),

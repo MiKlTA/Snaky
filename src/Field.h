@@ -31,12 +31,16 @@ public:
     
     void moveSnaky(); // TODO:
     
+    const glm::ivec2 & getSize() const {return m_size;};
+    
     static glm::vec3 getTilePos(int x, int y);
     static float distance() {return 0.08f;};
     
 private:
     glm::ivec2 m_size;
     Tile ***m_tiles;
+    
+    int foodCount;
     
     static float sqrt3d2() {return std::sqrt(3.0f)/2.0f;};
     static float xDelta() {return sqrt3d2() * distance() + 0.5f;};

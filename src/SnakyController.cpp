@@ -16,26 +16,34 @@ void SnakyController::onTick()
 {
     m_puppet->finishMovingAnimation();
     
-    m_puppet->updateTrajectory();
-    Tile *t = m_puppet->getNextTile();
-    if (t == nullptr) return; //
-    if (t->isSolid()) return; // TODO: destroy snaky
+    m_puppet->repeatTrajectory();
+    if (m_puppet->getNextTile() == nullptr) return;
+    
+    // moving
+    Tile *head = m_puppet->getHead();
+    m_puppet->move();
+    
+    if (head->isSolid())
+    {
+        m_puppet->die();
+        delete m_puppet;
+        pause();
+        return;
+    }
     
     // eating
-    if (t->haveFood())
+    if (head->haveFood())
     {
-        t->eatFood();
+        head->eatFood();
+        FoodCreator::inst()->decFoodCount();
         m_puppet->grow();
     }
     
     // diyng
-    if (t->haveSnaky() && !t->isPeaceful())
+    if (head->haveSnaky() && !head->isPeaceful())
     {
         // TODO: what happens after death
     }
-    
-    // moving
-    m_puppet->move();
     
     m_puppet->startMovingAnimation();
 }
@@ -52,8 +60,9 @@ void SnakyController::onMouseLeftClick()
     
     Tile *tPoint = m_field->getTile(pos);
     if (tPoint != nullptr)
+    {
         m_puppet->setTrajectoryPoint(tPoint->getFieldPos());
-    
+    }
     
     // DLT: debug output
     /*Log::inst()->message("--------------------------");

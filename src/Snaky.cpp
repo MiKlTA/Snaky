@@ -49,6 +49,8 @@ Snaky::Snaky(
     }
     
     makeModel();
+    
+    startMovingAnimation();
 }
 
 Snaky::~Snaky()
@@ -75,7 +77,7 @@ void Snaky::draw(const glm::mat4 &view, const glm::mat4 &proj)
     if (m_isMovingAnimation)
     {
         drawMovingPiece(m_tail.front(), m_head, m_rot);
-        if (m_tail.size() > 1)
+        if (m_tail.size() > 1 && !m_isGrowing)
         {
             drawMovingPiece(
                         *std::prev(m_tail.end(), 2),
@@ -88,7 +90,10 @@ void Snaky::draw(const glm::mat4 &view, const glm::mat4 &proj)
         drawPiece(m_head);
     for (auto i = m_tail.begin(); i != m_tail.end(); ++i)
     {
-        if (m_tail.size() > 1 && i == std::prev(m_tail.end(), 1)) break;
+        if (m_tail.size() > 1
+                && i == std::prev(m_tail.end(), 1)
+                && !m_isGrowing)
+            break;
         drawPiece(*i);
     }
 }
@@ -150,26 +155,41 @@ void Snaky::finishMovingAnimation()
     m_isMovingAnimation = false;
 }
 
-void Snaky::updateTrajectory()
+
+
+void Snaky::repeatTrajectory()
 {
-    if (m_trajectory.empty())
+    repeatTrajectory(m_trajectory);
+}
+
+void Snaky::setTrajectory(Tile *tile)
+{
+    m_trajectory.clear();
+    m_trajectory.push_front(tile);
+}
+
+void Snaky::setTrajectoryPoint(glm::ivec2 p)
+{
+    glm::ivec2 lastRelTrajectoryPoint = m_relTargetPoint;
+    
+    std::list<Tile *> trajectory;
+    m_relTargetPoint = p - m_head->getFieldPos();
+    repeatTrajectory(trajectory);
+    if (trajectory.empty())
     {
-        // DLT:
-        // m_targetPoint = glm::ivec2(rand() % 49 + 1, rand() % 24 + 1);
-        const glm::ivec2 targetPoint = m_relTargetPoint + m_head->getFieldPos();
+        m_relTargetPoint = lastRelTrajectoryPoint;
+    }
+    else
+    {
+        // DLT: debug output
         Log::inst()->message("New target: "
-                    + std::to_string(targetPoint.x)
+                    + std::to_string(p.x)
                     + " | "
-                    + std::to_string(targetPoint.y)
+                    + std::to_string(p.y)
                     );
         Log::inst()->printLog(1);
-        
-        int x = m_relTargetPoint.x;
-        int y = m_relTargetPoint.y;
-        float tanAngle = y / (x * 1.0f);
-        bool xIsN = x < 0;
-        bool yIsN = y < 0.0f;
-        makeTrajectory(tanAngle < 0 ? -tanAngle : tanAngle, xIsN, yIsN);
+        m_trajectory.clear();
+        std::copy(trajectory.begin(), trajectory.end(), m_trajectory.begin());
     }
 }
 
@@ -180,8 +200,10 @@ void Snaky::die()
     for (auto t : m_tail)
     {
         t->remSnaky(this);
+        FoodCreator::inst()->addFood(t);
     }
     m_head->remSnaky(this);
+    FoodCreator::inst()->addFood(m_head);
 }
 
 
@@ -189,8 +211,14 @@ void Snaky::die()
 // private:
 
 
-void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
+
+void Snaky::makeTrajectory(
+        std::list<Tile *> &trajectory, float tanAngle,
+        bool mirroredX, bool mirroredY
+                           )
 {
+    trajectory.clear();
+    
     int kx = mirroredX ? -1 : 1;
     int ky = mirroredY ? -1 : 1;
     
@@ -213,8 +241,8 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
             if (next == nullptr || next->haveSnaky(this)) return;
             
             Tile *prev;
-            if (!m_trajectory.empty())
-                prev = m_trajectory.front();
+            if (!trajectory.empty())
+                prev = trajectory.front();
             else
                 prev = m_head;
             
@@ -226,11 +254,11 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
                     bridge = m_field->getTile(x, y - 1*ky);
                 else
                     bridge = m_field->getTile(x - 1*kx, y);
-                if (bridge == nullptr || next->haveSnaky(this)) return;
-                m_trajectory.push_front(bridge);
+                if (bridge == nullptr || bridge->haveSnaky(this)) return;
+                trajectory.push_front(bridge);
             }
             
-            m_trajectory.push_front(next);
+            trajectory.push_front(next);
         }
     }
     else
@@ -243,8 +271,8 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
             if (next == nullptr || next->haveSnaky(this)) return;
             
             Tile *prev;
-            if (!m_trajectory.empty())
-                prev = m_trajectory.front();
+            if (!trajectory.empty())
+                prev = trajectory.front();
             else
                 prev = m_head;
             
@@ -259,8 +287,8 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
                     // if you want to teach a snake to bypass =
                     // single obstacles - add here
                     bridge = m_field->getTile(x + 1*kx, y - 1*ky);
-                    if (bridge == nullptr || next->haveSnaky(this)) return;
-                    m_trajectory.push_front(bridge);
+                    if (bridge == nullptr || bridge->haveSnaky(this)) return;
+                    trajectory.push_front(bridge);
                     bridge = m_field->getTile(x + 1*kx, y);
                 }
                 else if ((!next->isInverted() && !mirroredY)
@@ -268,26 +296,39 @@ void Snaky::makeTrajectory(float tanAngle, bool mirroredX, bool mirroredY)
                     bridge = m_field->getTile(x, y - 1*ky);
                 else
                     bridge = m_field->getTile(x - 1*kx, y);
-                if (bridge == nullptr || next->haveSnaky(this)) return;
-                m_trajectory.push_front(bridge);
+                if (bridge == nullptr || bridge->haveSnaky(this)) return;
+                trajectory.push_front(bridge);
             }
             
-            m_trajectory.push_front(next);
+            trajectory.push_front(next);
         }
     }
 }
 
-void Snaky::setTrajectory(Tile *tile)
+void Snaky::repeatTrajectory(std::list<Tile *> &trajectory)
 {
-    m_trajectory.clear();
-    m_trajectory.push_front(tile);
-}
-
-void Snaky::setTrajectoryPoint(glm::ivec2 p)
-{
-    m_trajectory.clear();
-    m_relTargetPoint = p - m_head->getFieldPos();
-    updateTrajectory();
+    if (trajectory.empty())
+    {
+        // DLT:
+        // m_targetPoint = glm::ivec2(rand() % 49 + 1, rand() % 24 + 1);
+        // DLT: debug output
+        /*const glm::ivec2 targetPoint = m_relTargetPoint + m_head->getFieldPos();
+        Log::inst()->message("New target: "
+                    + std::to_string(targetPoint.x)
+                    + " | "
+                    + std::to_string(targetPoint.y)
+                    );
+        Log::inst()->printLog(1);*/
+        
+        int x = m_relTargetPoint.x;
+        int y = m_relTargetPoint.y;
+        float tanAngle = y / (x * 1.0f);
+        bool xIsN = x < 0;
+        bool yIsN = y < 0.0f;
+        makeTrajectory(
+                    trajectory, tanAngle < 0 ? -tanAngle : tanAngle, xIsN, yIsN
+                       );
+    }
 }
 
 
