@@ -19,7 +19,10 @@ class FoodCreator : public Timer
 public:
     static FoodCreator * inst();
     
-    void onTick() override; 
+    void onTick(double curTime) override; 
+    
+    void setNormalFoodCount(int nfc) {m_normalFoodCount = nfc;};
+    void steMaximumFoodCount(int mfc) {m_maximumFoodCount = mfc;};
     
     void addFood(Tile *tile);
     void decFoodCount();
@@ -32,8 +35,8 @@ private:
     
     Field *m_field;
     
-    static const int m_normalFoodCount;
-    static const int m_maximumFoodCount;
+    int m_normalFoodCount;
+    int m_maximumFoodCount;
     int m_foodCount;
     int m_passing;
     

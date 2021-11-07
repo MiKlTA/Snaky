@@ -18,12 +18,10 @@ GLuint Tile::m_colorLoc = 0;
 
 
 Tile::Tile(
-        Render *render, TileType tt, glm::ivec2 pos,
-        bool isPeaceful, bool isInverted
+        RenderingObject *parent, TileType tt, glm::ivec2 pos, bool isInverted
         )
-    : RenderingObject(render),
+    : RenderingObject(parent),
       m_tileType(tt),
-      m_isPeaceful(isPeaceful),
       m_snaky(),
       m_fieldPos(pos),
       m_isInverted(isInverted),
@@ -45,13 +43,13 @@ Tile::Tile(
     {
     case TileType::VOID:
     case TileType::FOOD:
-        if (m_isPeaceful)
-            m_color = glm::vec4(0.75f, 1.0f, 0.95f, 1.0f);
-        else
-            m_color = glm::vec4(0.5f, 1.0f, 0.5f, 1.0f);
+        m_color = glm::vec4(0.5f, 1.0f, 0.5f, 1.0f);
         break;
     case TileType::SOLID:
         m_color = glm::vec4(0.5f, 0.45f, 0.3f, 1.0f);
+        break;
+    case TileType::PEACEFUL:
+        m_color = glm::vec4(0.75f, 1.0f, 0.95f, 1.0f);
         break;
     }
 }

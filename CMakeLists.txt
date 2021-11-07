@@ -29,6 +29,8 @@ add_executable(SSnaky
     src/Snaky.h
     src/SnakyController.cpp
     src/SnakyController.h
+    src/SnakyCreator.cpp
+    src/SnakyCreator.h
     
     engine/gl.h
     engine/Client.cpp

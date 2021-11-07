@@ -26,6 +26,6 @@ void Timer::checkTime(double curTime)
     if (curTime - m_lastUpdTime > m_delay)
     {
         m_lastUpdTime = curTime;
-        onTick();
+        onTick(curTime);
     }
 }

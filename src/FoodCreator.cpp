@@ -3,8 +3,6 @@
 
 
 FoodCreator *FoodCreator::m_instance = nullptr;
-const int FoodCreator::m_normalFoodCount = 20;
-const int FoodCreator::m_maximumFoodCount = 30;
 
 
 
@@ -19,7 +17,7 @@ FoodCreator * FoodCreator::inst()
 
 
 
-void FoodCreator::onTick()
+void FoodCreator::onTick(double curTime)
 {
     if (m_foodCount <= m_normalFoodCount)
     {
@@ -69,6 +67,8 @@ void FoodCreator::bindField(Field *field)
 FoodCreator::FoodCreator()
     : Timer(foodSpawningTime()),
         m_field(nullptr),
+        m_normalFoodCount(10),
+        m_maximumFoodCount(15),
         m_foodCount(0),
         m_passing(0)
 {
@@ -97,7 +97,7 @@ void FoodCreator::createFood()
         if (found != m_checked.end()) continue;
             
         Tile *t = m_field->getTile(p.x, p.y);
-        if (t->isSolid() || t->haveFood() || t->haveSnaky())
+        if (t->isSolid() || t->haveFood() || t->haveSnaky() || t->isPeaceful())
         {
             m_checked.push_back(p);
             continue;

@@ -12,7 +12,7 @@ public:
     
     double getDelay() const {return m_delay;};
     void checkTime(double curTime);
-    virtual void onTick() = 0;
+    virtual void onTick(double curTime) = 0;
     
     void pause() {m_paused = true;};
     void resume() {m_paused = false;};

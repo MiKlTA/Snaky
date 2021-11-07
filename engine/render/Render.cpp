@@ -29,26 +29,7 @@ void Render::renderAll()
     glClear(GL_COLOR_BUFFER_BIT);
     glm::mat4 viewMat = m_curCamera->getView();
     glm::mat4 projMat = m_curCamera->getProj();
-    for (auto rObj : m_renderingObjects)
-    {
-        rObj->draw(viewMat, projMat);
-    }
-}
-
-void Render::addRenderingObject(RenderingObject *rObj)
-{
-    m_renderingObjects.push_back(rObj);
-}
-
-void Render::removeRenderingObject(RenderingObject *rObj)
-{
-    auto found = std::find(
-                m_renderingObjects.begin(), m_renderingObjects.end(), rObj
-                           );
-    if (found != m_renderingObjects.end())
-    {
-        m_renderingObjects.erase(found);
-    }
+    recursiveDraw(viewMat, projMat);
 }
 
 
@@ -100,8 +81,7 @@ void GLAPIENTRY Render::messageCallback(
 
 
 Render::Render()
-    : m_renderingObjects(),
-      m_curCamera(nullptr),
+    : m_curCamera(nullptr),
       m_winSize(640, 480)
 {
     glewExperimental = true;

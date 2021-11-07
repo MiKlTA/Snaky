@@ -18,7 +18,7 @@
 class Field : public RenderingObject
 {
 public:
-    Field(Render *render, glm::ivec2 size);
+    Field(RenderingObject *parent, Camera *camera, glm::ivec2 size);
     ~Field();
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
@@ -35,8 +35,14 @@ public:
     
     static glm::vec3 getTilePos(int x, int y);
     static float distance() {return 0.05f;};
+    // it is this number of tiles that ensures the complete closure of the
+    // background from the player (with a given maximum camera size of 15.0f)
+    static glm::ivec2 solidZone() {return glm::ivec2(15, 9);};
+    static int peacefulZone() {return 7;};
     
 private:
+    Camera *m_camera;
+    
     glm::ivec2 m_size;
     Tile ***m_tiles;
     

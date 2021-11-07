@@ -9,10 +9,11 @@ SnakyController::SnakyController(Snaky *puppet, Camera *camera, Field *field)
       m_camera(camera),
       m_field(field)
 {
-    
+    m_camera->setViewSize(glm::vec2(4.0f));
+    m_camera->setPos(m_puppet->getHead()->getPos());
 }
 
-void SnakyController::onTick()
+void SnakyController::onTick(double curTime)
 {
     m_puppet->finishMovingAnimation();
     
@@ -36,6 +37,9 @@ void SnakyController::onTick()
         }
     
     m_puppet->move();
+    m_camera->setPosWithMoving(
+                m_puppet->getHead()->getPos(), Snaky::movingTime()
+                               );
     
     // eating
     if (head->haveFood())
@@ -43,6 +47,13 @@ void SnakyController::onTick()
         head->eatFood();
         FoodCreator::inst()->decFoodCount();
         m_puppet->grow();
+        const int dSnakyLength = 50 - SnakyCreator::initialLength();
+        const float dCameraSize = maxCameraSize() - initialCameraSize();
+        const float vel = dCameraSize / (dSnakyLength * 1.0f);
+        if (m_puppet->size() <= 50)
+            m_camera->setViewSizeWithMoving(
+                        m_camera->getViewSize() + vel, Snaky::movingTime()
+                        );
     }
     
     m_puppet->startMovingAnimation();
@@ -50,8 +61,9 @@ void SnakyController::onTick()
 
 
 
-void SnakyController::onMouseLeftClick()
+void SnakyController::onMouseMove(double x, double y)
 {
+    
     if (m_puppet == nullptr) return;
     const glm::ivec2 windowSize = Window::inst()->getSize();
     const glm::ivec2 mousePos = Mouse::inst()->getPos();

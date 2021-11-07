@@ -25,7 +25,7 @@ class Snaky : public RenderingObject, public Timer
     
 public:
     Snaky(
-            Render *render, Field *field, Tile *head,
+            RenderingObject *parent, Field *field, Tile *head,
             Tile **tail, int tailLength,
             glm::vec4 color
           );
@@ -33,10 +33,11 @@ public:
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
     
-    void onTick() override;
+    void onTick(double curTime) override;
     
     Tile * getHead() {return m_head;};
     Tile * getNextTile();
+    int size() {return m_tail.size() + 1;};
     
     void move();
     void startMovingAnimation();

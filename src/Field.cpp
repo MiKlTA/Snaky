@@ -2,21 +2,39 @@
 
 
 
-Field::Field(Render *render, glm::ivec2 size)
-    : RenderingObject(render),
+Field::Field(RenderingObject *parent, Camera *camera, glm::ivec2 size)
+    : RenderingObject(parent),
+      m_camera(camera),
+      
       m_size(size),
-      m_tiles(new Tile**[size.x])
+      m_tiles(new Tile**[size.x + 2 * solidZone().x + peacefulZone()])
 {
+    m_size.x += 2 * solidZone().x;
+    m_size.y += 2 * solidZone().y;
+    m_size.x += peacefulZone();
+    
     for (int x = 0; x < m_size.x; ++x)
     {
         m_tiles[x] = new Tile*[m_size.y];
         for (int y = 0; y < m_size.y; ++y)
         {
-            Tile::TileType tt
-                    = rand() % 10 ? Tile::TileType::VOID : Tile::TileType::SOLID;
+            Tile::TileType tt;
+            if (x < solidZone().x || x >= m_size.x - solidZone().x
+                    || y < solidZone().y || y >= m_size.y - solidZone().y
+                    )
+            {
+                tt = Tile::TileType::SOLID;
+            }
+            else if (x - solidZone().x < peacefulZone())
+            {
+                tt = Tile::TileType::PEACEFUL;
+            }
+            else
+            {
+                tt = Tile::TileType::VOID;
+            }
             m_tiles[x][y] = new Tile(
-                        render, tt, glm::ivec2(x, y),
-                        false, (x + y) % 2 != 0
+                        this, tt, glm::ivec2(x, y), (x + y) % 2 != 0
                                      );
         }
     }
@@ -39,8 +57,24 @@ Field::~Field()
 
 void Field::draw(const glm::mat4 &view, const glm::mat4 &proj)
 {
-    for (int x = 0; x < m_size.x; ++x)
-        for (int y = 0; y < m_size.y; ++y)
+    int left, right, bottom, top;
+    glm::vec2 pos = m_camera->getPos();
+    pos.x += 0.5f;
+    pos.y += 1.0f;
+    glm::vec2 size = m_camera->getViewSize();
+    size += 1.0f;
+    left    = (pos.x - size.x/2.0f) / xDelta();
+    right   = (pos.x + size.x/2.0f) / xDelta();
+    bottom  = (pos.y - size.y/2.0f) / yDelta();
+    top     = (pos.y + size.y/2.0f) / yDelta();
+    
+    if (left < 0) left = 0;
+    if (right > m_size.x) right = m_size.x;
+    if (bottom < 0) bottom = 0;
+    if (top > m_size.y) top = m_size.y;
+    
+    for (int x = left; x < right; ++x)
+        for (int y = bottom; y < top; ++y)
         {
             m_tiles[x][y]->draw(view, proj);
         }

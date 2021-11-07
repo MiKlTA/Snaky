@@ -4,6 +4,7 @@
 
 
 #include "Snaky.h"
+#include "SnakyCreator.h"
 #include "engine/handle/Timer.h"
 #include "engine/handle/MouseListener.h"
 #include "engine/handle/Mouse.h"
@@ -19,9 +20,12 @@ class SnakyController : public Timer, public MouseListener
 public:
     SnakyController(Snaky *puppet, Camera *camera, Field *field);
     
-    void onTick() override; 
+    void onTick(double curTime) override; 
     
-    void onMouseLeftClick() override; 
+    void onMouseMove(double x, double y) override;
+    
+    static float initialCameraSize() {return 3.0f;};
+    static float maxCameraSize() {return 15.0f;};
     
 private:
     Snaky *m_puppet;

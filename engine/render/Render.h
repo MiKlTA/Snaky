@@ -3,13 +3,12 @@
 
 
 
-#include <vector>
-#include <algorithm>
 #include <string>
 
 #include "GLM/vec2.hpp"
 
 #include "Camera.h"
+#include "RenderingObject.h"
 
 #include "engine/gl.h"
 
@@ -17,24 +16,15 @@
 
 
 
-// this class is responsible for the complete preparation for the
-// rendering of all objects, as well as for their registration
 
-
-
-class RenderingObject;
-
-
-
-class Render
+class Render : public RenderingObject
 {
 
 public:
     static Render * inst();
     
+    void draw(const glm::mat4 &view, const glm::mat4 &proj) override {};
     void renderAll();
-    void addRenderingObject(RenderingObject *rObj);
-    void removeRenderingObject(RenderingObject *rObj);
     void bindCamera(Camera *camera);
     
     glm::vec2 getGLPixelSize() const; 
@@ -44,7 +34,6 @@ private:
     Render();
     static Render *m_instance;
     
-    std::vector<RenderingObject *> m_renderingObjects;
     Camera *m_curCamera;
     
     glm::ivec2 m_winSize;

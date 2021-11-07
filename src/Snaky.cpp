@@ -23,11 +23,11 @@ GLuint Snaky::m_centrePosLoc = 0;
 
 
 Snaky::Snaky(
-        Render *render, Field *field, Tile *head,
+        RenderingObject *parent, Field *field, Tile *head,
         Tile **tail, int tailLength,
         glm::vec4 color
              )
-    : RenderingObject(render),
+    : RenderingObject(parent),
       Timer(movingTime() / (1.0 * stageOfMoving())),
       m_field(field),
       m_head(head),
@@ -102,7 +102,7 @@ void Snaky::draw(const glm::mat4 &view, const glm::mat4 &proj)
 
 
 
-void Snaky::onTick()
+void Snaky::onTick(double curTime)
 {
     m_rot -= deltaAngle();
 }
@@ -184,12 +184,12 @@ void Snaky::setTrajectoryPoint(glm::ivec2 p)
     else
     {
         // DLT: debug output
-        Log::inst()->message("New target: "
-                    + std::to_string(p.x)
-                    + " | "
-                    + std::to_string(p.y)
-                    );
-        Log::inst()->printLog(1);
+//        Log::inst()->message("New target: "
+//                    + std::to_string(p.x)
+//                    + " | "
+//                    + std::to_string(p.y)
+//                    );
+//        Log::inst()->printLog(1);
         m_trajectory.clear();
         std::copy(trajectory.begin(), trajectory.end(), m_trajectory.begin());
     }

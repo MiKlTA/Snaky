@@ -18,8 +18,10 @@ GLuint Rectangle::m_colorLoc = 0;
 
 
 
-Rectangle::Rectangle(Render *render, glm::vec4 color, glm::vec2 pos, glm::vec2 size)
-    : RenderingObject(render),
+Rectangle::Rectangle(
+        RenderingObject *parent, glm::vec4 color, glm::vec2 pos, glm::vec2 size
+                     )
+    : RenderingObject(parent),
       m_pos(pos.x, pos.y, 0.0f),
       m_rot(0.0f),
       m_scale(size.x, size.y, 1.0f),

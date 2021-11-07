@@ -6,7 +6,7 @@
 #include <set>
 #include <math.h>
 
-#include "../engine/render/RenderingObject.h"
+#include "../engine/render/Render.h"
 #include "../engine/render/Shader.h"
 #include "../engine/render/ShaderProgram.h"
 
@@ -18,7 +18,10 @@
 class Rectangle : public RenderingObject
 {
 public:
-    Rectangle(Render *render, glm::vec4 color, glm::vec2 pos, glm::vec2 size);
+    Rectangle(
+            RenderingObject *parent, glm::vec4 color,
+            glm::vec2 pos, glm::vec2 size
+              );
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override;
     
