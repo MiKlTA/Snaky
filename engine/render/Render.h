@@ -25,7 +25,7 @@ public:
     
     void draw(const glm::mat4 &view, const glm::mat4 &proj) override {};
     void renderAll();
-    void bindCamera(Camera *camera);
+    void bindCamera(Camera *camera) {m_curCamera = camera;};
     
     glm::vec2 getGLPixelSize() const; 
     glm::ivec2 getWinSize() const {return m_winSize;};

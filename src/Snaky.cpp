@@ -212,9 +212,9 @@ void Snaky::die()
 
 bool Snaky::isCrossingItself()
 {
-    for (auto t : m_tail)
+    for (auto i = m_tail.begin(); i != std::prev(m_tail.end()); ++i)
     {
-        if (t == m_head) return true;
+        if (*i == m_head) return true;
     }
     return false;
 }

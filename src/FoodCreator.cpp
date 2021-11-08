@@ -31,7 +31,7 @@ void FoodCreator::onTick(double curTime)
             createFood();
         }
         ++m_passing;
-        if (m_passing == 10) m_passing = 0;
+        if (m_passing == 3) m_passing = 0;
     }
 }
 

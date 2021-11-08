@@ -34,13 +34,6 @@ void Render::renderAll()
 
 
 
-void Render::bindCamera(Camera *camera)
-{
-    m_curCamera = camera;
-}
-
-
-
 glm::vec2 Render::getGLPixelSize() const
 {
     return m_curCamera->getViewSize() / glm::vec2(m_winSize);

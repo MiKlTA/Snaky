@@ -17,7 +17,7 @@ class SnakyCreator
 public:
     static SnakyCreator * inst();
     
-    void setField(Field *field) {m_field = field;};
+    void bindField(Field *field) {m_field = field;};
     void setSpawnArea(glm::ivec2 p1, glm::ivec2 p2);
     
     void build();

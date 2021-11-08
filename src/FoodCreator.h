@@ -22,7 +22,7 @@ public:
     void onTick(double curTime) override; 
     
     void setNormalFoodCount(int nfc) {m_normalFoodCount = nfc;};
-    void steMaximumFoodCount(int mfc) {m_maximumFoodCount = mfc;};
+    void setMaximumFoodCount(int mfc) {m_maximumFoodCount = mfc;};
     
     void addFood(Tile *tile);
     void decFoodCount();
