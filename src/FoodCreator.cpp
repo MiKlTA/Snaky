@@ -19,12 +19,12 @@ FoodCreator * FoodCreator::inst()
 
 void FoodCreator::onTick(double curTime)
 {
-    if (m_foodCount <= m_normalFoodCount)
+    if (m_foodCount < m_normalFoodCount)
     {
         createFood();
-        m_passing = 0;
+        m_passing = -1;
     }
-    else if (m_foodCount <= m_maximumFoodCount)
+    else if (m_foodCount < m_maximumFoodCount)
     {
         if (m_passing == 0)
         {
@@ -81,7 +81,6 @@ void FoodCreator::createFood()
 {
     if (m_field == nullptr) return;
     
-    ++m_foodCount;
     glm::ivec2 size = m_field->getSize();
     
     std::list<glm::ivec2> m_checked;
@@ -103,7 +102,7 @@ void FoodCreator::createFood()
             continue;
         }
         
-        t->addFood();
+        addFood(t);
         break;
     }
 }

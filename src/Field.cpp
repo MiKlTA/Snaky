@@ -105,10 +105,12 @@ Tile * Field::getTile(glm::vec2 pos)
 
 Tile ** Field::getTilesNear(const Tile *tile, int &count)
 {
-    count = 0;
-    Tile **res;
     const int x = tile->getFieldPos().x;
     const int y = tile->getFieldPos().y;
+    count = (x != 0) + (x != m_size.x - 1) + (!tile->isInverted() && y != 0)
+            + (y != m_size.y - 1);
+    Tile **res = new Tile*[count];
+    count = 0;
     
     if (x != 0)
     {

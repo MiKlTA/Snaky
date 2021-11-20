@@ -46,8 +46,8 @@ private:
     void _init();
     
     static glm::ivec2 fieldSize() {return glm::ivec2(10, 10);};
-    static int normalFoodCount() {return 100;};
-    static int maximumFoodCount() {return 150;};
+    static int normalFoodCount() {return 5;};
+    static int maximumFoodCount() {return 15;};
 };
 
 
